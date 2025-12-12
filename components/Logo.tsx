@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 export const Logo = ({ className = "w-10 h-10" }: { className?: string }) => {
   const [imageError, setImageError] = useState(false);
 
-  // Default SVG Logo as fallback
+  // Fallback SVG Icon
   const SvgLogo = (
     <svg 
       viewBox="0 0 100 100" 
@@ -18,31 +18,23 @@ export const Logo = ({ className = "w-10 h-10" }: { className?: string }) => {
       <circle cx="35" cy="45" r="4" fill="#1A1A1A" />
       <circle cx="65" cy="45" r="4" fill="#1A1A1A" />
       <ellipse cx="50" cy="55" rx="6" ry="4" fill="#1A1A1A" />
-      <path 
-        d="M25 45 C25 35 35 35 40 40 L60 40 C65 35 75 35 75 45 C75 55 65 55 60 50 L40 50 C35 55 25 55 25 45 Z" 
-        fill="#7A3EB1" 
-        stroke="#4A1A71" 
-        strokeWidth="2"
-      />
-      <line x1="25" y1="45" x2="15" y2="40" stroke="#7A3EB1" strokeWidth="3" />
-      <line x1="75" y1="45" x2="85" y2="40" stroke="#7A3EB1" strokeWidth="3" />
-      <line x1="30" y1="58" x2="15" y2="55" stroke="#1A1A1A" strokeWidth="1" />
-      <line x1="30" y1="62" x2="15" y2="65" stroke="#1A1A1A" strokeWidth="1" />
-      <line x1="70" y1="58" x2="85" y2="55" stroke="#1A1A1A" strokeWidth="1" />
-      <line x1="70" y1="62" x2="85" y2="65" stroke="#1A1A1A" strokeWidth="1" />
+      <path d="M25 45 C25 35 35 35 40 40 L60 40 C65 35 75 35 75 45 C75 55 65 55 60 50 L40 50 C35 55 25 55 25 45 Z" fill="#7A3EB1" stroke="#4A1A71" strokeWidth="2" />
     </svg>
   );
 
-  if (imageError) {
-    return SvgLogo;
-  }
-
   return (
-    <img 
-      src="fotos/FocarGo.png" 
-      alt="FocarGo Logo" 
-      className={`${className} object-contain`}
-      onError={() => setImageError(true)}
-    />
+    <div className={`relative ${className} flex items-center justify-center`}>
+      {!imageError ? (
+        <img 
+          src="./fotos/FocarGo.png" 
+          alt="FocarGo Logo" 
+          className="w-full h-full object-contain"
+          onError={(e) => {
+             console.error("Logo failed to load from: ", e.currentTarget.src);
+             setImageError(true);
+          }}
+        />
+      ) : SvgLogo}
+    </div>
   );
 };

@@ -8,10 +8,15 @@ import { Button } from './UI';
 export const RecyclingChatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([
-        { id: '1', role: 'model', text: "Olá! Sou o EcoBot 🌱 Pergunte-me qualquer coisa sobre reciclagem!", timestamp: new Date().toISOString() }
+        { id: '1', role: 'model', text: "Olá! Sou o EcoBot 🌱 Posso ver e ouvir! Envie uma foto, áudio ou texto.", timestamp: new Date().toISOString() }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    
+    // Voice State
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorder = useRef<MediaRecorder | null>(null);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -22,24 +27,107 @@ export const RecyclingChatbot = () => {
         scrollToBottom();
     }, [messages, isOpen]);
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+    // --- TEXT TO SPEECH (Accessibility) ---
+    const speak = (text: string) => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Parar fala anterior
 
-        const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', text: input, timestamp: new Date().toISOString() };
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 1.2; // Um pouco mais rápido para conversa fluida
+            
+            // Tentar selecionar uma voz do Google ou Nativa Brasileira
+            const voices = window.speechSynthesis.getVoices();
+            const brVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || voices.find(v => v.lang === 'pt-BR');
+            if (brVoice) utterance.voice = brVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+    };
+
+    // --- VOICE RECORDING ---
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder.current = new MediaRecorder(stream);
+            const chunks: Blob[] = [];
+
+            mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
+            mediaRecorder.current.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64 = reader.result as string;
+                    handleSend({ audio: base64 });
+                };
+                reader.readAsDataURL(blob);
+                stream.getTracks().forEach(t => t.stop());
+            };
+
+            mediaRecorder.current.start();
+            setIsRecording(true);
+        } catch (e) {
+            console.error("Mic error", e);
+            alert("Ative a permissão do microfone para usar o modo voz.");
+        }
+    };
+
+    const stopRecording = () => {
+        mediaRecorder.current?.stop();
+        setIsRecording(false);
+    };
+
+    // --- SEND MESSAGE ---
+    const handleSend = async (payload?: { text?: string, audio?: string }) => {
+        const textToSend = payload?.text || input;
+        const audioToSend = payload?.audio;
+
+        if ((!textToSend && !audioToSend) || isLoading) return;
+
+        // Optimistic update
+        const userMsgText = textToSend || (audioToSend ? "🎤 Áudio enviado..." : "");
+        const userMsg: ChatMessage = { 
+            id: Date.now().toString(), 
+            role: 'user', 
+            text: userMsgText, 
+            timestamp: new Date().toISOString() 
+        };
+        
         setMessages(prev => [...prev, userMsg]);
         setInput("");
         setIsLoading(true);
 
-        const responseText = await chatWithGemini(messages, input);
-        
-        const botMsg: ChatMessage = { id: (Date.now() + 1).toString(), role: 'model', text: responseText, timestamp: new Date().toISOString() };
-        setMessages(prev => [...prev, botMsg]);
-        setIsLoading(false);
+        try {
+            const responseText = await chatWithGemini(messages, { 
+                text: textToSend, 
+                audio: audioToSend 
+            });
+            
+            const botMsg: ChatMessage = { 
+                id: (Date.now() + 1).toString(), 
+                role: 'model', 
+                text: responseText, 
+                timestamp: new Date().toISOString() 
+            };
+            
+            setMessages(prev => [...prev, botMsg]);
+            
+            // RESPOSTA EM ÁUDIO AUTOMÁTICA (Acessibilidade)
+            // Se o usuário mandou áudio, o bot responde em áudio automaticamente.
+            if (audioToSend) {
+                speak(responseText);
+            }
+
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <>
-            {/* Floating Toggle Button */}
+            {/* Botão Flutuante */}
             <motion.button 
                 onClick={() => setIsOpen(!isOpen)}
                 whileHover={{ scale: 1.1 }}
@@ -49,7 +137,7 @@ export const RecyclingChatbot = () => {
                 {isOpen ? '✕' : '💬'}
             </motion.button>
 
-            {/* Chat Window */}
+            {/* Janela do Chat */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div 
@@ -62,20 +150,20 @@ export const RecyclingChatbot = () => {
                         <div className="bg-gradient-to-r from-teal to-teal-dark p-4 flex items-center gap-3 shadow-md">
                             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl backdrop-blur-sm">🤖</div>
                             <div>
-                                <h3 className="font-bold text-white leading-tight">EcoBot Assistente</h3>
+                                <h3 className="font-bold text-white leading-tight">EcoBot</h3>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                    <span className="text-[10px] text-white/80 font-medium">Powered by Gemini 3</span>
+                                    <span className="text-[10px] text-white/80 font-medium">Online • Voz Ativa</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Messages Area */}
+                        {/* Mensagens */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
                             {messages.map((msg) => (
-                                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                     <div 
-                                        className={`max-w-[80%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                                        className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm relative ${
                                             msg.role === 'user' 
                                             ? 'bg-teal text-white rounded-tr-none' 
                                             : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
@@ -83,8 +171,20 @@ export const RecyclingChatbot = () => {
                                     >
                                         {msg.text}
                                     </div>
+                                    
+                                    {/* Botão de Ouvir Mensagem */}
+                                    {msg.role === 'model' && (
+                                        <button 
+                                            onClick={() => speak(msg.text)}
+                                            className="mt-1 text-teal hover:text-teal-dark text-[10px] font-bold flex items-center gap-1 ml-1 bg-teal/5 px-2 py-1 rounded-full transition-colors"
+                                            aria-label="Ouvir resposta"
+                                        >
+                                            🔊 Ouvir
+                                        </button>
+                                    )}
                                 </div>
                             ))}
+                            
                             {isLoading && (
                                 <div className="flex justify-start">
                                     <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex gap-1">
@@ -97,21 +197,40 @@ export const RecyclingChatbot = () => {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Input Area */}
+                        {/* Input */}
                         <div className="p-3 bg-white border-t border-gray-100">
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 items-end">
+                                {/* Botão Microfone */}
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
+                                    onMouseDown={startRecording}
+                                    onMouseUp={stopRecording}
+                                    onTouchStart={startRecording}
+                                    onTouchEnd={stopRecording}
+                                    className={`w-12 h-11 rounded-xl flex items-center justify-center text-xl shadow-sm transition-all ${
+                                        isRecording 
+                                        ? 'bg-red-500 text-white animate-pulse shadow-red-200' 
+                                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                    }`}
+                                    title="Segure para falar"
+                                >
+                                    {isRecording ? '🎙️' : '🎤'}
+                                </motion.button>
+
                                 <input 
                                     type="text" 
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Pergunte sobre reciclagem..."
-                                    className="flex-1 bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal/50 outline-none"
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend({ text: input })}
+                                    placeholder={isRecording ? "Ouvindo..." : "Digite..."}
+                                    disabled={isRecording}
+                                    className="flex-1 bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal/50 outline-none transition-all"
                                 />
+                                
                                 <button 
-                                    onClick={handleSend}
-                                    disabled={!input.trim() || isLoading}
-                                    className="bg-teal hover:bg-teal-dark disabled:opacity-50 disabled:cursor-not-allowed text-white w-12 rounded-xl flex items-center justify-center transition-colors shadow-lg"
+                                    onClick={() => handleSend({ text: input })}
+                                    disabled={!input.trim() || isLoading || isRecording}
+                                    className="bg-teal hover:bg-teal-dark disabled:opacity-50 disabled:cursor-not-allowed text-white w-12 h-11 rounded-xl flex items-center justify-center transition-colors shadow-lg"
                                 >
                                     ➤
                                 </button>

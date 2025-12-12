@@ -2,8 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ScanResult, ChatMessage } from "../types";
 
-// Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// Initialize Gemini with safe environment variable access
+const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : '';
+const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 const SYSTEM_INSTRUCTION_ANALYSIS = `
    Você é um especialista em reciclagem e gestão de resíduos no Brasil. 
@@ -66,8 +67,8 @@ export const analyzeWasteMultimodal = async (input: {
     }
     
     if (input.audio) {
-        // Assume audio is base64 encoded webm or similar
-        const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav);base64,/, "");
+        // Remove header if present
+        const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav|ogg);base64,/, "");
         parts.push({ inlineData: { mimeType: "audio/webm", data: cleanAudio } });
         parts.push({ text: "Analise o áudio onde descrevo um resíduo." });
     }
@@ -106,8 +107,12 @@ export const analyzeWasteImage = async (base64Image: string): Promise<ScanResult
     return analyzeWasteMultimodal({ image: base64Image });
 };
 
-export const chatWithGemini = async (history: ChatMessage[], newMessage: string): Promise<string> => {
+export const chatWithGemini = async (
+    history: ChatMessage[], 
+    input: { text?: string, audio?: string }
+): Promise<string> => {
     try {
+        // Prepare history correctly for the chat context
         const historyParts = history.map(msg => ({
             role: msg.role === 'model' ? 'model' : 'user',
             parts: [{ text: msg.text }]
@@ -115,20 +120,30 @@ export const chatWithGemini = async (history: ChatMessage[], newMessage: string)
 
         const chat = ai.chats.create({
             model: "gemini-2.5-flash",
-            messages: historyParts,
+            history: historyParts,
             config: {
-                systemInstruction: "Você é o EcoBot, um assistente virtual amigável e especialista em reciclagem do app FocarGo. Ajude os usuários a reciclar, tirar dúvidas sobre materiais e incentive hábitos sustentáveis. Respostas curtas e motivadoras com emojis.",
+                systemInstruction: "Você é o EcoBot, um assistente virtual acessível, amigável e especialista em reciclagem. Ajude usuários (incluindo cegos ou com baixa visão) descrevendo visualmente conceitos quando necessário. Suas respostas devem ser claras, encorajadoras e prontas para serem lidas em voz alta (TTS). Use emojis com moderação.",
             }
         });
 
-        const result = await chat.sendMessage({
-            message: newMessage
-        });
+        const messageContent: any[] = [];
+        
+        if (input.audio) {
+            const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav|ogg);base64,/, "");
+            messageContent.push({ inlineData: { mimeType: "audio/webm", data: cleanAudio } });
+            messageContent.push({ text: "Ouça e responda a este áudio em português." });
+        }
+        
+        if (input.text) {
+            messageContent.push({ text: input.text });
+        }
 
-        return result.text || "Desculpe, não consegui processar sua resposta.";
+        const result = await chat.sendMessage({ message: messageContent });
+
+        return result.text || "Desculpe, não entendi. Pode repetir?";
     } catch (error) {
         console.error("Chat Error:", error);
-        return "Estou com dificuldades de conexão no momento. Tente novamente!";
+        return "Estou com dificuldades de conexão. Tente novamente!";
     }
 };
 
