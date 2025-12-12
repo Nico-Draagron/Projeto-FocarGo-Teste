@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -78,7 +79,7 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              Todos
+              All
             </button>
             {['cooperative', 'electronics', 'ecopoint', 'pharmacy'].map(f => (
               <button 
@@ -90,7 +91,7 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {f === 'cooperative' ? 'Cooperativas' : f}
+                {f === 'cooperative' ? 'Cooperatives' : f}
               </button>
             ))}
           </div>
@@ -114,7 +115,7 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
           {userLocation && (
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
               <Popup>
-                <div className="text-center font-bold">Você está aqui</div>
+                <div className="text-center font-bold">You are here</div>
               </Popup>
             </Marker>
           )}
@@ -164,7 +165,7 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
           </div>
 
           <div className="mb-5">
-            <h3 className="font-bold text-gray-400 text-xs uppercase mb-2">Materiais Aceitos</h3>
+            <h3 className="font-bold text-gray-400 text-xs uppercase mb-2">Accepted Materials</h3>
             <div className="flex flex-wrap gap-2">
               {selectedPoint.acceptedMaterials.map(m => {
                  const config = MATERIAL_CONFIG[m];
@@ -190,14 +191,14 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
             <div className="bg-gray-50 p-4 rounded-2xl flex items-center gap-3">
               <span className="text-2xl">🕒</span>
               <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase">Horário</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase">Hours</p>
                 <p className="text-xs font-bold text-dark">{selectedPoint.hours}</p>
               </div>
             </div>
             <div className="bg-gray-50 p-4 rounded-2xl flex items-center gap-3">
               <span className="text-2xl">⭐</span>
               <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase">Avaliação</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase">Rating</p>
                 <p className="text-xs font-bold text-dark">{selectedPoint.rating}/5.0</p>
               </div>
             </div>
@@ -208,10 +209,10 @@ export const MapView = ({ collectionPoints = [], userLocation }: MapViewProps) =
               href={`tel:${selectedPoint.phone}`} 
               className="flex-1 bg-white border-2 border-gray-100 text-dark py-3.5 rounded-xl font-bold text-center hover:bg-gray-50 hover:border-gray-200 transition-colors"
             >
-              📞 Ligar
+              📞 Call
             </a>
             <button className="flex-1 bg-gradient-to-r from-teal to-teal-light text-white py-3.5 rounded-xl font-bold hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-              <span>🧭</span> Navegar
+              <span>🧭</span> Navigate
             </button>
           </div>
         </div>

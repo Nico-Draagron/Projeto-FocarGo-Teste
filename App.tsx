@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { UserState, INITIAL_USER_STATE, ViewState, ScanResult, Reward, LevelConfig } from './types';
 import { LEVELS, REWARDS, BOSS_BATTLE_MOCK, QUEST_POOL, MOCK_POSTS, MOCK_CHALLENGES, COLLECTION_POINTS } from './gamificationData';
@@ -49,14 +50,14 @@ interface LayoutProps {
 
 const Layout = ({ children, currentView, setView, user }: LayoutProps) => {
   const navItems = [
-    { id: 'Home', icon: HomeIcon, label: 'Início' },
+    { id: 'Home', icon: HomeIcon, label: 'Home' },
     { id: 'Scan', icon: CameraIcon, label: 'Scan' },
-    { id: 'Map', icon: MapIcon, label: 'Mapa' }, // Added Map
+    { id: 'Map', icon: MapIcon, label: 'Map' }, 
     { id: 'Social', icon: SocialIcon, label: 'Social' },
-    { id: 'Quests', icon: TrophyIcon, label: 'Missões' }, 
+    { id: 'Quests', icon: TrophyIcon, label: 'Quests' }, 
     { id: 'Skills', icon: LightningIcon, label: 'Skills' }, 
-    { id: 'Market', icon: ShopIcon, label: 'Loja' },
-    { id: 'Profile', icon: UserIcon, label: 'Perfil' },
+    { id: 'Market', icon: ShopIcon, label: 'Market' },
+    { id: 'Profile', icon: UserIcon, label: 'Profile' },
   ];
 
   return (
@@ -108,7 +109,7 @@ const Layout = ({ children, currentView, setView, user }: LayoutProps) => {
         </div>
         <div className="p-6 border-t border-gray-100 bg-gray-50/50 cursor-pointer" onClick={() => setView('Profile')}>
            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-gray-400 uppercase">Seu Progresso</span>
+              <span className="text-xs font-bold text-gray-400 uppercase">Your Progress</span>
               <span className="text-xs font-black text-teal">{user.level} 🔥</span>
            </div>
            <div className="flex items-center gap-3">
@@ -116,7 +117,7 @@ const Layout = ({ children, currentView, setView, user }: LayoutProps) => {
                    {user.avatar ? '👤' : 'AG'}
               </div>
               <div className="flex-1">
-                 <p className="text-sm font-black text-dark truncate">{user.name || "Alex Green"}</p>
+                 <p className="text-sm font-black text-dark truncate">{user.name || "Username"}</p>
                  <p className="text-xs text-gray-500 font-medium">Eco {user.levelTitle}</p>
               </div>
            </div>
@@ -179,11 +180,11 @@ const HomeView = ({ user, setView }: { user: UserState, setView: (v: ViewState) 
                     <span className="font-bold text-sm tracking-wide">LEVEL {user.level} - {user.levelTitle.toUpperCase()}</span>
                 </div>
                 <div className="space-y-2">
-                    <h1 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">Bem-vindo, {user.name || "Guardian"}!</h1>
+                    <h1 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">Welcome, {user.name || "Username"}!</h1>
                     <div className="max-w-md">
                         <div className="flex justify-between text-xs font-bold text-teal-light uppercase mb-2">
                             <span>{user.xp} XP</span>
-                            <span>Próximo: {user.xpToNextLevel} XP</span>
+                            <span>Next: {user.xpToNextLevel} XP</span>
                         </div>
                         <div className="h-4 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
                             <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full bg-gradient-to-r from-teal to-accent shadow-[0_0_15px_rgba(95,212,94,0.5)]" />
@@ -199,8 +200,8 @@ const HomeView = ({ user, setView }: { user: UserState, setView: (v: ViewState) 
                         <CameraIcon active={true} />
                     </div>
                     <div className="text-center relative z-10">
-                        <h3 className="text-xl font-black text-dark group-hover:text-teal-dark mb-1">Escanear</h3>
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest group-hover:text-teal">Ganhe Ecoins</span>
+                        <h3 className="text-xl font-black text-dark group-hover:text-teal-dark mb-1">Scan</h3>
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest group-hover:text-teal">Earn Ecoins</span>
                     </div>
                 </button>
             </div>
@@ -214,13 +215,13 @@ const HomeView = ({ user, setView }: { user: UserState, setView: (v: ViewState) 
         <div className="grid grid-cols-2 gap-4">
              <Card onClick={() => setView('Map')} className="cursor-pointer hover:bg-blue/5 border-blue/10">
                  <div className="text-3xl mb-2">🗺️</div>
-                 <h3 className="font-bold text-dark">Mapa</h3>
-                 <p className="text-xs text-gray-500">Pontos de Coleta</p>
+                 <h3 className="font-bold text-dark">Map</h3>
+                 <p className="text-xs text-gray-500">Collection Points</p>
              </Card>
              <Card onClick={() => setView('Social')} className="cursor-pointer hover:bg-teal/5 border-teal/10">
                  <div className="text-3xl mb-2">👥</div>
-                 <h3 className="font-bold text-dark">Comunidade</h3>
-                 <p className="text-xs text-gray-500">Desafios & Feed</p>
+                 <h3 className="font-bold text-dark">Community</h3>
+                 <p className="text-xs text-gray-500">Challenges & Feed</p>
              </Card>
         </div>
       </div>
@@ -238,13 +239,13 @@ const SocialView = () => {
         const newPost = {
             id: Date.now().toString(),
             type: data.type,
-            author: { name: "Você", avatar: "👤", level: 6 },
-            timestamp: "Agora",
+            author: { name: "You", avatar: "👤", level: 6 },
+            timestamp: "Just now",
             likes: 0,
             shares: 0,
             comments: [],
             content: {
-                title: "Novo Post",
+                title: "New Post",
                 description: data.content,
                 // Add default icon for demo
                 icon: data.type === 'tip' ? '💡' : '🎉' 
@@ -259,9 +260,9 @@ const SocialView = () => {
             {showCreateModal && <CreatePostModal onClose={() => setShowCreateModal(false)} onSubmit={handleCreatePost} />}
 
             <div className="flex justify-between items-center mb-6">
-                <SectionTitle title="Comunidade" subtitle="Participe, aprenda e inspire" />
+                <SectionTitle title="Community" subtitle="Engage, learn, and inspire" />
                 <Button onClick={() => setShowCreateModal(true)} size="sm">
-                    + Novo Post
+                    + New Post
                 </Button>
             </div>
 
@@ -299,7 +300,7 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
         } catch (e) {
             console.error(e);
             setStatus('idle');
-            alert("Erro na análise. Tente novamente.");
+            alert("Analysis error. Please try again.");
         }
     };
 
@@ -312,8 +313,8 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
                     <div className="absolute inset-0 flex items-center justify-center text-2xl">🧠</div>
                 </div>
                 <div>
-                    <h2 className="text-2xl font-black text-dark">Analisando com Gemini 3</h2>
-                    <p className="text-gray-500">Processando multimodalmente...</p>
+                    <h2 className="text-2xl font-black text-dark">Analyzing with Gemini 3</h2>
+                    <p className="text-gray-500">Processing multimodal data...</p>
                 </div>
             </div>
         );
@@ -323,15 +324,15 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
         return (
             <div className="pb-24 animate-in slide-up">
                  <div className="flex items-center justify-between mb-6">
-                     <button onClick={() => setStatus('idle')} className="text-gray-500 font-bold hover:text-dark">← Voltar</button>
-                     <span className="text-xs font-bold text-teal bg-teal/10 px-3 py-1 rounded-full">Confiança {Math.round(result.confidence_score)}%</span>
+                     <button onClick={() => setStatus('idle')} className="text-gray-500 font-bold hover:text-dark">← Back</button>
+                     <span className="text-xs font-bold text-teal bg-teal/10 px-3 py-1 rounded-full">Confidence {Math.round(result.confidence_score)}%</span>
                  </div>
 
                  <Card className={`mb-6 border-l-8 ${result.recyclable ? 'border-l-green-500' : 'border-l-gray-400'}`}>
                      <div className="flex items-start gap-4">
                          <div className="text-6xl">{result.bin_emoji}</div>
                          <div>
-                             <p className="text-xs font-bold uppercase text-gray-400">Identificado</p>
+                             <p className="text-xs font-bold uppercase text-gray-400">Identified</p>
                              <h2 className="text-3xl font-black text-dark leading-tight">{result.material}</h2>
                              <p className="font-medium text-gray-600">{result.category} • {result.bin_color}</p>
                          </div>
@@ -340,11 +341,11 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                      <Card className="bg-light border-none">
-                         <h4 className="font-bold text-dark mb-2">💡 Explicação</h4>
+                         <h4 className="font-bold text-dark mb-2">💡 Explanation</h4>
                          <p className="text-sm text-gray-700">{result.educational_explanation}</p>
                      </Card>
                      <Card className="bg-light border-none">
-                         <h4 className="font-bold text-dark mb-2">🌍 Impacto</h4>
+                         <h4 className="font-bold text-dark mb-2">🌍 Impact</h4>
                          <div className="flex gap-4">
                              <div>
                                  <span className="block text-xl font-black text-teal">{result.environmental_impact.co2_saved_kg}</span>
@@ -352,14 +353,14 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
                              </div>
                              <div>
                                  <span className="block text-xl font-black text-orange-500">{result.environmental_impact.energy_saved}</span>
-                                 <span className="text-[10px] uppercase font-bold text-gray-500">Energia</span>
+                                 <span className="text-[10px] uppercase font-bold text-gray-500">Energy</span>
                              </div>
                          </div>
                      </Card>
                  </div>
                  
                  <Button onClick={() => onScanComplete(result)} className="w-full py-4 text-lg shadow-xl">
-                     Resgatar +{result.ecoins_earned} Ecoins 💰
+                     Redeem +{result.ecoins_earned} Ecoins 💰
                  </Button>
             </div>
         );
@@ -367,7 +368,7 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
 
     return (
         <div className="pb-24">
-            <SectionTitle title="Scan Multimodal" subtitle="Escolha como identificar o resíduo" />
+            <SectionTitle title="Multimodal Scan" subtitle="Choose how to identify waste" />
             
             {/* Tabs */}
             <div className="flex p-1 bg-gray-100 rounded-2xl mb-6">
@@ -381,7 +382,7 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
                             : 'text-gray-400 hover:text-gray-600'
                         }`}
                     >
-                        {m === 'camera' ? '📷 Câmera' : m === 'voice' ? '🎤 Voz' : '⌨️ Texto'}
+                        {m === 'camera' ? '📷 Camera' : m === 'voice' ? '🎤 Voice' : '⌨️ Text'}
                     </button>
                 ))}
             </div>
@@ -405,8 +406,8 @@ const ScanView = ({ onScanComplete }: { onScanComplete: (res: ScanResult) => voi
 const SkillsView = ({ user }: { user: UserState }) => (
     <div className="pb-20">
         <div className="bg-gradient-to-r from-teal to-teal-dark p-8 rounded-3xl text-white mb-8 shadow-xl">
-             <h1 className="text-3xl font-black mb-2">Árvore de Habilidades</h1>
-             <p className="opacity-90">Evolua seu conhecimento em cada material para ganhar bônus de XP e Ecoins.</p>
+             <h1 className="text-3xl font-black mb-2">Skill Tree</h1>
+             <p className="opacity-90">Level up your knowledge in each material to earn XP and Ecoins bonuses.</p>
         </div>
         <SkillTreeView progress={user.skillTrees} />
     </div>
@@ -414,17 +415,17 @@ const SkillsView = ({ user }: { user: UserState }) => (
 
 const QuestsView = ({ user }: { user: UserState }) => (
     <div className="pb-20 space-y-8">
-         <SectionTitle title="Missões Diárias" subtitle="Reseta em 14h 30m" />
+         <SectionTitle title="Daily Quests" subtitle="Resets in 14h 30m" />
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {user.dailyQuests.map(q => <QuestCard key={q.id} quest={q} />)}
          </div>
 
-         <SectionTitle title="Missões Semanais" />
+         <SectionTitle title="Weekly Quests" />
          <div className="grid grid-cols-1 gap-4">
              {user.weeklyQuests.map(q => <QuestCard key={q.id} quest={q} />)}
          </div>
          
-         <SectionTitle title="Boss Lendário" subtitle="Evento da Comunidade" />
+         <SectionTitle title="Legendary Boss" subtitle="Community Event" />
          <BossBattleCard boss={BOSS_BATTLE_MOCK} />
     </div>
 );
@@ -517,14 +518,14 @@ export default function App() {
             
             {view === 'Market' && (
                 <div className="pb-20">
-                    <SectionTitle title="Loja" />
+                    <SectionTitle title="Market" />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {REWARDS.map(r => (
                             <Card key={r.id}>
                                 <div className="text-4xl mb-4">{r.image}</div>
                                 <h3 className="font-bold">{r.name}</h3>
                                 <p className="text-teal font-black">{r.price} ecoins</p>
-                                <Button className="w-full mt-4" disabled={user.balance < r.price}>Resgatar</Button>
+                                <Button className="w-full mt-4" disabled={user.balance < r.price}>Redeem</Button>
                             </Card>
                         ))}
                     </div>
@@ -534,7 +535,7 @@ export default function App() {
             {['Learn', 'Impact'].includes(view) && (
                 <div className="flex flex-col items-center justify-center h-96 text-gray-400">
                     <div className="text-4xl mb-4">🚧</div>
-                    <p className="font-bold">Em construção: Módulo {view}</p>
+                    <p className="font-bold">Under construction: Module {view}</p>
                 </div>
             )}
         </Layout>

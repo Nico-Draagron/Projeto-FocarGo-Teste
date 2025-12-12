@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { UserState, AvatarConfig } from '../types';
 import { Card, Button, SectionTitle } from './UI';
@@ -63,7 +64,7 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
         <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
             <div className="bg-white rounded-3xl w-full max-w-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-2xl text-gray-400">×</button>
-                <h2 className="text-3xl font-black text-gray-800 mb-6">Estúdio de Avatar</h2>
+                <h2 className="text-3xl font-black text-gray-800 mb-6">Avatar Studio</h2>
 
                 {/* Preview */}
                 <div className="flex justify-center mb-8">
@@ -76,7 +77,7 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
                 <div className="space-y-6">
                     {/* Base Character */}
                     <div>
-                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Personagem</h3>
+                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Character</h3>
                         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                             {['seal', 'tree', 'leaf', 'drop', 'flower'].map(char => (
                                 <button 
@@ -96,11 +97,11 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
 
                     {/* Accessories */}
                     <div>
-                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Acessórios</h3>
+                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Accessories</h3>
                         
                         {/* Hats */}
                         <div className="mb-4">
-                            <p className="text-xs text-gray-400 font-bold mb-2">Chapéus</p>
+                            <p className="text-xs text-gray-400 font-bold mb-2">Hats</p>
                             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                                 {['none', 'cap', 'crown', 'flowers'].map(hat => {
                                     const unlocked = avatar.unlocked.includes(`hat_${hat}`) || hat === 'none';
@@ -125,7 +126,7 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
 
                         {/* Glasses */}
                         <div>
-                             <p className="text-xs text-gray-400 font-bold mb-2">Óculos</p>
+                             <p className="text-xs text-gray-400 font-bold mb-2">Glasses</p>
                              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                                 {['none', 'sunglasses', 'nerd', 'vr'].map(glasses => {
                                     const unlocked = avatar.unlocked.includes(`glasses_${glasses}`) || glasses === 'none';
@@ -151,7 +152,7 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
 
                     {/* Color Palette */}
                     <div>
-                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Fundo</h3>
+                        <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Background</h3>
                         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                             {['#0F8F6D', '#7A3EB1', '#5FD45E', '#F59E0B', '#EF4444', '#3B82F6', '#EC4899', '#6B7280'].map(color => (
                                 <button 
@@ -171,8 +172,8 @@ export const AvatarEditor = ({ current, onSave, onClose }: { current: AvatarConf
 
                 {/* Actions */}
                 <div className="flex gap-4 mt-8 pt-4 border-t border-gray-100">
-                    <Button variant="secondary" onClick={onClose} className="flex-1">Cancelar</Button>
-                    <Button onClick={() => onSave(avatar)} className="flex-1 shadow-xl">Salvar Avatar ✨</Button>
+                    <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+                    <Button onClick={() => onSave(avatar)} className="flex-1 shadow-xl">Save Avatar ✨</Button>
                 </div>
             </div>
         </div>
@@ -215,19 +216,19 @@ export const DetailedStatsView = ({ user }: { user: UserState }) => {
 
     return (
         <div className="space-y-6 animate-in slide-up pb-10">
-            <h3 className="text-xl font-black text-dark mb-4">Estatísticas Detalhadas</h3>
+            <h3 className="text-xl font-black text-dark mb-4">Detailed Stats</h3>
             
             {/* Overview Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard icon="♻️" value={user.itemsIdentified} label="Itens Reciclados" color="teal" />
-                <StatCard icon="🌍" value={`${user.co2SavedTotal}kg`} label="CO₂ Evitado" color="green" />
-                <StatCard icon="🔥" value={user.currentStreak} label="Dias Seguidos" color="orange" />
+                <StatCard icon="♻️" value={user.itemsIdentified} label="Recycled Items" color="teal" />
+                <StatCard icon="🌍" value={`${user.co2SavedTotal}kg`} label="CO₂ Saved" color="green" />
+                <StatCard icon="🔥" value={user.currentStreak} label="Day Streak" color="orange" />
                 <StatCard icon="💰" value={user.balance} label="EcoCoins" color="yellow" />
             </div>
 
             {/* Material Breakdown Chart */}
             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                <h3 className="font-black text-gray-800 mb-6">Materiais Reciclados</h3>
+                <h3 className="font-black text-gray-800 mb-6">Recycled Materials</h3>
                 <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={materialData}>
@@ -249,7 +250,7 @@ export const DetailedStatsView = ({ user }: { user: UserState }) => {
 
             {/* Activity Heatmap */}
             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                <h3 className="font-black text-gray-800 mb-6">Atividade (30 Dias)</h3>
+                <h3 className="font-black text-gray-800 mb-6">Activity (30 Days)</h3>
                 <div className="grid grid-cols-7 gap-2">
                     {last30Days.map(day => (
                         <div 
@@ -264,7 +265,7 @@ export const DetailedStatsView = ({ user }: { user: UserState }) => {
             {/* Achievements Showcase */}
             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-black text-gray-800">Conquistas</h3>
+                    <h3 className="font-black text-gray-800">Achievements</h3>
                     <span className="text-sm font-bold text-teal bg-teal/10 px-2 py-1 rounded-lg">
                         {user.achievements.length}/{ACHIEVEMENTS.length}
                     </span>
@@ -328,19 +329,19 @@ export const ProfileView = ({ user, onUpdateUser }: { user: UserState, onUpdateU
                     </div>
                     
                     <div className="text-center md:text-left flex-1">
-                        <h2 className="text-2xl font-black text-dark">{user.name || "Guardian"}</h2>
+                        <h2 className="text-2xl font-black text-dark">{user.name || "Username"}</h2>
                         <div className="flex items-center justify-center md:justify-start gap-2 mt-1">
                              <span className="text-purple font-bold">🛡️ {user.levelTitle}</span>
                              <span className="text-gray-300">•</span>
                              <span className="text-gray-500 font-medium">Level {user.level}</span>
                         </div>
-                        <p className="text-gray-500 text-sm mt-3 italic">"Reciclagem é meu superpoder! 🌱"</p>
+                        <p className="text-gray-500 text-sm mt-3 italic">"Recycling is my superpower! 🌱"</p>
                     </div>
 
                     <div className="flex gap-4">
                         <div className="text-center">
                             <div className="font-black text-xl text-teal">{user.itemsIdentified}</div>
-                            <div className="text-[10px] font-bold text-gray-400 uppercase">Itens</div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase">Items</div>
                         </div>
                         <div className="w-px bg-gray-200"></div>
                         <div className="text-center">
@@ -357,13 +358,13 @@ export const ProfileView = ({ user, onUpdateUser }: { user: UserState, onUpdateU
                     onClick={() => setActiveTab('stats')}
                     className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === 'stats' ? 'bg-white text-teal shadow-sm' : 'text-gray-400'}`}
                  >
-                     📊 Estatísticas
+                     📊 Stats
                  </button>
                  <button 
                     onClick={() => setActiveTab('history')}
                     className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === 'history' ? 'bg-white text-teal shadow-sm' : 'text-gray-400'}`}
                  >
-                     📜 Histórico
+                     📜 History
                  </button>
             </div>
 
@@ -379,7 +380,7 @@ export const ProfileView = ({ user, onUpdateUser }: { user: UserState, onUpdateU
                         <DetailedStatsView user={user} />
                     ) : (
                         <div className="space-y-4">
-                            {user.history.length === 0 && <p className="text-center text-gray-400 py-10">Nenhuma atividade recente.</p>}
+                            {user.history.length === 0 && <p className="text-center text-gray-400 py-10">No recent activity.</p>}
                             {user.history.map(item => (
                                 <Card key={item.id} className="flex items-center gap-4 py-4">
                                     <div className="text-2xl bg-gray-50 p-3 rounded-full">{item.icon}</div>

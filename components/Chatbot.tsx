@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { chatWithGemini } from '../services/geminiService';
@@ -8,7 +9,7 @@ import { Button } from './UI';
 export const RecyclingChatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([
-        { id: '1', role: 'model', text: "Olá! Sou o EcoBot 🌱 Posso ver e ouvir! Envie uma foto, áudio ou texto.", timestamp: new Date().toISOString() }
+        { id: '1', role: 'model', text: "Hello! I'm EcoBot 🌱 I can see and hear! Send a photo, audio, or text.", timestamp: new Date().toISOString() }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -30,16 +31,15 @@ export const RecyclingChatbot = () => {
     // --- TEXT TO SPEECH (Accessibility) ---
     const speak = (text: string) => {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Parar fala anterior
+            window.speechSynthesis.cancel(); // Stop previous speech
 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'pt-BR';
-            utterance.rate = 1.2; // Um pouco mais rápido para conversa fluida
+            utterance.lang = 'en-US';
+            utterance.rate = 1.1; 
             
-            // Tentar selecionar uma voz do Google ou Nativa Brasileira
             const voices = window.speechSynthesis.getVoices();
-            const brVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || voices.find(v => v.lang === 'pt-BR');
-            if (brVoice) utterance.voice = brVoice;
+            const voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang === 'en-US');
+            if (voice) utterance.voice = voice;
 
             window.speechSynthesis.speak(utterance);
         }
@@ -68,7 +68,7 @@ export const RecyclingChatbot = () => {
             setIsRecording(true);
         } catch (e) {
             console.error("Mic error", e);
-            alert("Ative a permissão do microfone para usar o modo voz.");
+            alert("Enable microphone permission to use voice mode.");
         }
     };
 
@@ -85,7 +85,7 @@ export const RecyclingChatbot = () => {
         if ((!textToSend && !audioToSend) || isLoading) return;
 
         // Optimistic update
-        const userMsgText = textToSend || (audioToSend ? "🎤 Áudio enviado..." : "");
+        const userMsgText = textToSend || (audioToSend ? "🎤 Audio sent..." : "");
         const userMsg: ChatMessage = { 
             id: Date.now().toString(), 
             role: 'user', 
@@ -112,8 +112,7 @@ export const RecyclingChatbot = () => {
             
             setMessages(prev => [...prev, botMsg]);
             
-            // RESPOSTA EM ÁUDIO AUTOMÁTICA (Acessibilidade)
-            // Se o usuário mandou áudio, o bot responde em áudio automaticamente.
+            // AUTOMATIC AUDIO RESPONSE (Accessibility)
             if (audioToSend) {
                 speak(responseText);
             }
@@ -127,7 +126,7 @@ export const RecyclingChatbot = () => {
 
     return (
         <>
-            {/* Botão Flutuante */}
+            {/* Floating Button */}
             <motion.button 
                 onClick={() => setIsOpen(!isOpen)}
                 whileHover={{ scale: 1.1 }}
@@ -137,7 +136,7 @@ export const RecyclingChatbot = () => {
                 {isOpen ? '✕' : '💬'}
             </motion.button>
 
-            {/* Janela do Chat */}
+            {/* Chat Window */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div 
@@ -153,12 +152,12 @@ export const RecyclingChatbot = () => {
                                 <h3 className="font-bold text-white leading-tight">EcoBot</h3>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                    <span className="text-[10px] text-white/80 font-medium">Online • Voz Ativa</span>
+                                    <span className="text-[10px] text-white/80 font-medium">Online • Voice Active</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Mensagens */}
+                        {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
                             {messages.map((msg) => (
                                 <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
@@ -172,14 +171,14 @@ export const RecyclingChatbot = () => {
                                         {msg.text}
                                     </div>
                                     
-                                    {/* Botão de Ouvir Mensagem */}
+                                    {/* Listen Button */}
                                     {msg.role === 'model' && (
                                         <button 
                                             onClick={() => speak(msg.text)}
                                             className="mt-1 text-teal hover:text-teal-dark text-[10px] font-bold flex items-center gap-1 ml-1 bg-teal/5 px-2 py-1 rounded-full transition-colors"
-                                            aria-label="Ouvir resposta"
+                                            aria-label="Listen response"
                                         >
-                                            🔊 Ouvir
+                                            🔊 Listen
                                         </button>
                                     )}
                                 </div>
@@ -200,7 +199,7 @@ export const RecyclingChatbot = () => {
                         {/* Input */}
                         <div className="p-3 bg-white border-t border-gray-100">
                             <div className="flex gap-2 items-end">
-                                {/* Botão Microfone */}
+                                {/* Microphone Button */}
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
                                     onMouseDown={startRecording}
@@ -212,7 +211,7 @@ export const RecyclingChatbot = () => {
                                         ? 'bg-red-500 text-white animate-pulse shadow-red-200' 
                                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                                     }`}
-                                    title="Segure para falar"
+                                    title="Hold to speak"
                                 >
                                     {isRecording ? '🎙️' : '🎤'}
                                 </motion.button>
@@ -222,7 +221,7 @@ export const RecyclingChatbot = () => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend({ text: input })}
-                                    placeholder={isRecording ? "Ouvindo..." : "Digite..."}
+                                    placeholder={isRecording ? "Listening..." : "Type..."}
                                     disabled={isRecording}
                                     className="flex-1 bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal/50 outline-none transition-all"
                                 />

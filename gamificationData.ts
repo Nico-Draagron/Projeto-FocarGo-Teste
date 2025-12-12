@@ -1,4 +1,5 @@
 
+
 import { LevelConfig, Achievement, Quest, Lesson, SkillNodeConfig, Reward, Post, CollectionPoint, BossBattle, Challenge } from './types';
 
 // --- LEVELS ---
@@ -25,19 +26,19 @@ export const SKILL_NODES: SkillNodeConfig[] = [
 ];
 
 export const MATERIAL_CONFIG: Record<string, {color: string, icon: string, name: string}> = {
-    plastic: { color: '#E74C3C', icon: '🔴', name: 'Plástico' },
-    glass: { color: '#2ECC71', icon: '🟢', name: 'Vidro' },
+    plastic: { color: '#E74C3C', icon: '🔴', name: 'Plastic' },
+    glass: { color: '#2ECC71', icon: '🟢', name: 'Glass' },
     metal: { color: '#F39C12', icon: '🟡', name: 'Metal' },
-    paper: { color: '#3498DB', icon: '🔵', name: 'Papel' },
-    organic: { color: '#8D6E63', icon: '🟤', name: 'Orgânico' },
-    electronic: { color: '#9B59B6', icon: '⚡', name: 'Eletrônicos' },
+    paper: { color: '#3498DB', icon: '🔵', name: 'Paper' },
+    organic: { color: '#8D6E63', icon: '🟤', name: 'Organic' },
+    electronic: { color: '#9B59B6', icon: '⚡', name: 'Electronic' },
 };
 
 // --- BOSS BATTLE ---
 export const BOSS_BATTLE_MOCK: BossBattle = {
   id: "boss_contamination",
-  title: "Rei da Contaminação",
-  description: "A comunidade precisa identificar corretamente 500 itens contaminados para derrotar este monstro de chorume!",
+  title: "Contamination King",
+  description: "The community needs to correctly identify 500 contaminated items to defeat this slime monster!",
   difficulty: "legendary",
   icon: "👹",
   progress: 342,
@@ -69,7 +70,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
 // --- CHALLENGE POOL (QUESTS) ---
 export const QUEST_POOL: Quest[] = [
-    { id: 'dq1', type: 'daily', title: 'Scanner Casual', description: 'Identify 3 items', difficulty: 'easy', icon: '📸', progress: 0, goal: 3, rewards: {xp: 50, ecoins: 30}, timeLeft: '14h', completed: false },
+    { id: 'dq1', type: 'daily', title: 'Casual Scanner', description: 'Identify 3 items', difficulty: 'easy', icon: '📸', progress: 0, goal: 3, rewards: {xp: 50, ecoins: 30}, timeLeft: '14h', completed: false },
     // ... more quests
 ];
 
@@ -100,54 +101,54 @@ export const LESSONS: Lesson[] = [
 export const REWARDS: Reward[] = [
   {
     id: "natura_discount",
-    name: "Natura: 20% OFF",
-    description: "Válido em produtos sustentáveis",
+    name: "EcoStore: 20% OFF",
+    description: "Valid on sustainable products",
     category: "discount",
     price: 200,
     image: "🌿",
-    partner: "Natura",
+    partner: "EcoStore",
     stock: 500,
     tags: ["popular", "partner"],
     redemptionType: "code",
-    instructions: "Use o código no checkout da Natura.com.br"
+    instructions: "Use code at checkout"
   },
   {
-    id: "ifood_credit",
-    name: "iFood: R$10 de Desconto",
-    description: "Válido em pedidos acima de R$30",
+    id: "food_app_credit",
+    name: "FoodApp: $10 Discount",
+    description: "Valid on orders above $30",
     category: "discount",
     price: 250,
     image: "🍔",
-    partner: "iFood",
+    partner: "FoodApp",
     stock: 1000,
     tags: ["popular"],
     redemptionType: "code",
-    instructions: "Aplique o cupom no app iFood"
+    instructions: "Apply coupon in the app"
   },
   {
     id: "plant_tree",
-    name: "Plantar 1 Árvore",
-    description: "Árvore nativa plantada em seu estado",
+    name: "Plant 1 Tree",
+    description: "Native tree planted in your name",
     category: "donation",
     price: 500,
     image: "🌳",
-    partner: "SOS Mata Atlântica",
+    partner: "Green Earth",
     stock: "unlimited",
     tags: ["impact", "popular"],
     redemptionType: "donation",
-    instructions: "Você receberá um certificado digital"
+    instructions: "You will receive a digital certificate"
   },
   {
     id: "cert_expert",
-    name: "Certificado Expert",
-    description: "Reconhecimento digital de expertise",
+    name: "Expert Certificate",
+    description: "Digital recognition of expertise",
     category: "digital",
     price: 100,
     image: "🎓",
     stock: "unlimited",
     tags: ["popular"],
     redemptionType: "download",
-    instructions: "Baixe o PDF no seu perfil"
+    instructions: "Download the PDF in your profile"
   }
 ];
 
@@ -181,7 +182,7 @@ export const MOCK_POSTS: Post[] = [
     likes: 45,
     shares: 3,
     comments: [
-        { id: "c1", author: { name: "Pedro", avatar: "👨‍🌾" }, text: "Incrível! Parabéns Maria!", timestamp: "1h ago" }
+        { id: "c1", author: { name: "Pedro", avatar: "👨‍🌾" }, text: "Amazing! Congrats Maria!", timestamp: "1h ago" }
     ],
     content: {
         title: "PLASTIC PRO",
@@ -244,75 +245,75 @@ export const MOCK_CHALLENGES: Challenge[] = [
 export const COLLECTION_POINTS: CollectionPoint[] = [
   {
     id: "coop_vm",
-    name: "Cooperativa Vila Mariana",
+    name: "Cooperative Green Valley",
     type: "cooperative",
-    address: "Rua Domingos de Morais, 2187",
+    address: "123 Green St.",
     location: { lat: -23.5881, lng: -46.6383 },
     acceptedMaterials: ["plastic", "glass", "metal", "paper"],
     specialMaterials: [],
-    hours: "Seg-Sex: 8h-17h",
+    hours: "Mon-Fri: 8h-17h",
     phone: "(11) 5571-1234",
-    description: "Cooperativa familiar. Aceita todos os recicláveis básicos.",
+    description: "Family cooperative. Accepts all basic recyclables.",
     rating: 4.7,
     verified: true,
     photo: "♻️"
   },
   {
     id: "ecopoint_paulista",
-    name: "Ecoponto Paulista",
+    name: "Ecopoint Central",
     type: "ecopoint",
-    address: "Av. Paulista, 1578",
+    address: "456 Central Ave",
     location: { lat: -23.5631, lng: -46.6565 },
     acceptedMaterials: ["plastic", "glass", "metal", "paper", "organic"],
     specialMaterials: ["electronic"],
-    hours: "24 horas",
+    hours: "24 hours",
     phone: "0800-123-4567",
-    description: "Ecoponto completo com coleta 24h.",
+    description: "Complete ecopoint with 24h collection.",
     rating: 4.9,
     verified: true,
     photo: "🌿"
   },
   {
     id: "eletro_tech",
-    name: "EletroRecicla Tech",
+    name: "ElectroRecycle Tech",
     type: "electronics",
-    address: "Rua Augusta, 2340",
+    address: "789 Tech Rd",
     location: { lat: -23.5570, lng: -46.6623 },
     acceptedMaterials: ["electronic"],
     specialMaterials: ["electronic"],
-    hours: "Seg-Sáb: 10h-20h",
+    hours: "Mon-Sat: 10h-20h",
     phone: "(11) 3062-9876",
-    description: "Especializada em eletrônicos e baterias.",
+    description: "Specialized in electronics and batteries.",
     rating: 4.5,
     verified: true,
     photo: "⚡"
   },
   {
     id: "farmacia_popular",
-    name: "Farmácia Descarte Consciente",
+    name: "Conscious Disposal Pharmacy",
     type: "pharmacy",
-    address: "Rua Vergueiro, 1234",
+    address: "321 Health Blvd",
     location: { lat: -23.5724, lng: -46.6398 },
     acceptedMaterials: [],
     specialMaterials: [],
-    hours: "Seg-Dom: 8h-22h",
+    hours: "Mon-Sun: 8h-22h",
     phone: "(11) 2234-5678",
-    description: "Coleta medicamentos vencidos e embalagens.",
+    description: "Collects expired medicines and packaging.",
     rating: 4.6,
     verified: true,
     photo: "💊"
   },
   {
     id: "coop_mooca",
-    name: "Recicla Mooca",
+    name: "Recycle East",
     type: "cooperative",
-    address: "Rua da Mooca, 3456",
+    address: "654 East Side Ave",
     location: { lat: -23.5493, lng: -46.5998 },
     acceptedMaterials: ["plastic", "glass", "metal", "paper"],
     specialMaterials: [],
-    hours: "Seg-Sex: 7h-16h",
+    hours: "Mon-Fri: 7h-16h",
     phone: "(11) 2691-3456",
-    description: "Cooperativa com foco em vidro e plástico.",
+    description: "Cooperative focused on glass and plastic.",
     rating: 4.3,
     verified: true,
     photo: "♻️"

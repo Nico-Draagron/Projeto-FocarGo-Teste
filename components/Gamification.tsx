@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, Button } from './UI';
 import { MATERIAL_CONFIG, SKILL_NODES } from '../gamificationData';
@@ -25,16 +26,16 @@ export const StreakWidget = ({ streak, freezeCount }: { streak: number, freezeCo
     <div className="absolute -top-4 -right-4 text-9xl opacity-10 rotate-12">🔥</div>
     <div className="relative z-10 flex justify-between items-end">
         <div>
-            <p className="text-xs font-bold uppercase opacity-80 mb-1">Sequência Atual</p>
+            <p className="text-xs font-bold uppercase opacity-80 mb-1">Current Streak</p>
             <p className="text-5xl font-black mb-1 flex items-baseline gap-2">
-                {streak} <span className="text-xl font-bold opacity-80">dias</span>
+                {streak} <span className="text-xl font-bold opacity-80">days</span>
             </p>
         </div>
         <div className="text-right">
              {freezeCount > 0 && (
                 <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-bold">
                     <span>🧊</span>
-                    <span>{freezeCount} Proteções</span>
+                    <span>{freezeCount} Freezes</span>
                 </div>
             )}
         </div>
@@ -65,7 +66,7 @@ export const SkillTreeView = ({ progress }: { progress: Record<string, SkillTree
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-dark">{config.name} Mastery</h3>
-                                <p className="text-xs text-gray-500 font-bold uppercase">Level {prog.currentLevel} • {prog.itemsIdentified} Itens Identificados</p>
+                                <p className="text-xs text-gray-500 font-bold uppercase">Level {prog.currentLevel} • {prog.itemsIdentified} Items Identified</p>
                             </div>
                          </div>
                          
@@ -153,7 +154,7 @@ export const QuestCard: React.FC<{ quest: Quest }> = ({ quest }) => {
              </div>
 
              <div className="mt-4 flex items-center gap-3 relative z-10">
-                 <span className="text-xs font-bold text-gray-400">Recompensas:</span>
+                 <span className="text-xs font-bold text-gray-400">Rewards:</span>
                  <span className="text-xs font-black text-purple">+{quest.rewards.xp} XP</span>
                  <span className="text-xs font-black text-teal">+{quest.rewards.ecoins} 💰</span>
              </div>
@@ -173,7 +174,7 @@ export const BossBattleCard = ({ boss }: { boss: BossBattle }) => {
                 <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-3">
                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest animate-pulse">Boss Battle</span>
-                         <span className="text-purple-300 text-xs font-bold">⏱️ {boss.timeLeft} restantes</span>
+                         <span className="text-purple-300 text-xs font-bold">⏱️ {boss.timeLeft} remaining</span>
                     </div>
                     
                     <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
@@ -185,7 +186,7 @@ export const BossBattleCard = ({ boss }: { boss: BossBattle }) => {
 
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm font-bold text-purple-200">
-                             <span>HP Global</span>
+                             <span>Global HP</span>
                              <span>{boss.progress} / {boss.goal}</span>
                         </div>
                         <div className="h-6 bg-black/50 rounded-full overflow-hidden border border-purple-500/30">
@@ -196,7 +197,7 @@ export const BossBattleCard = ({ boss }: { boss: BossBattle }) => {
                                  <div className="absolute inset-0 animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%]"></div>
                              </div>
                         </div>
-                        <p className="text-xs text-gray-500 text-right">{boss.participants.toLocaleString()} Guardiões lutando agora</p>
+                        <p className="text-xs text-gray-500 text-right">{boss.participants.toLocaleString()} Guardians fighting</p>
                     </div>
 
                     <div className="flex flex-wrap gap-4 mt-4">
@@ -213,7 +214,7 @@ export const BossBattleCard = ({ boss }: { boss: BossBattle }) => {
                         {boss.icon}
                     </div>
                     <Button className="mt-6 bg-red-600 hover:bg-red-700 text-white border-none shadow-[0_0_20px_rgba(220,38,38,0.4)] w-full md:w-auto">
-                        ENTRAR NA BATALHA ⚔️
+                        JOIN BATTLE ⚔️
                     </Button>
                 </div>
             </div>

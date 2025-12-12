@@ -1,5 +1,6 @@
 
-import React from 'react';
+
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LevelConfig } from '../types';
 import { Button } from './UI';
@@ -46,11 +47,11 @@ export const LevelUpModal = ({ newLevel, onClose }: LevelUpModalProps) => {
                         </motion.h2>
                         
                         <p className="text-2xl font-bold text-white mb-8">
-                            Você agora é um <span className="text-teal-400">{newLevel.title}</span>
+                            You are now a <span className="text-teal-400">{newLevel.title}</span>
                         </p>
                         
                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/10">
-                            <p className="text-xs font-bold text-gray-300 uppercase tracking-widest mb-4">Recompensas</p>
+                            <p className="text-xs font-bold text-gray-300 uppercase tracking-widest mb-4">Rewards</p>
                             <div className="flex justify-center gap-8 text-3xl font-black">
                                 <div className="flex flex-col items-center">
                                     <span className="text-yellow-400">+{newLevel.rewards.ecoins}</span>
@@ -64,7 +65,7 @@ export const LevelUpModal = ({ newLevel, onClose }: LevelUpModalProps) => {
                             
                             {newLevel.rewards.unlocks.length > 0 && (
                                 <div className="mt-6 pt-6 border-t border-white/10">
-                                    <p className="text-[10px] text-gray-400 uppercase mb-2">Desbloqueado</p>
+                                    <p className="text-[10px] text-gray-400 uppercase mb-2">Unlocked</p>
                                     <div className="flex flex-wrap gap-2 justify-center">
                                         {newLevel.rewards.unlocks.map(unlock => (
                                             <span key={unlock} className="bg-teal/20 border border-teal/40 px-3 py-1 rounded-full text-xs font-bold text-teal-200">
@@ -80,7 +81,7 @@ export const LevelUpModal = ({ newLevel, onClose }: LevelUpModalProps) => {
                             onClick={onClose}
                             className="w-full bg-gradient-to-r from-teal to-accent hover:from-teal-light hover:to-accent-hover text-dark py-4 rounded-xl font-black text-lg shadow-xl hover:scale-105 transition-transform"
                         >
-                            CONTINUAR JORNADA 🚀
+                            CONTINUE JOURNEY 🚀
                         </Button>
                     </div>
                 </motion.div>

@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { Post, Comment, Challenge } from '../types';
 import { Card, Button } from './UI';
@@ -89,7 +91,7 @@ const AchievementPost = ({ post }: { post: Post }) => (
             </div>
         </div>
         
-        <p className="text-gray-600 mb-4">desbloqueou uma conquista ÉPICA! 🎉</p>
+        <p className="text-gray-600 mb-4">unlocked an EPIC achievement! 🎉</p>
 
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg border-2 border-yellow-500/30">
              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -116,7 +118,7 @@ const ChallengePost = ({ post }: { post: Post }) => {
     return (
         <div>
             <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <span className="text-teal">📌 Desafio Oficial</span>
+                <span className="text-teal">📌 Official Challenge</span>
                 <span>• {post.timestamp}</span>
             </div>
 
@@ -131,7 +133,7 @@ const ChallengePost = ({ post }: { post: Post }) => {
                 
                 <div className="p-6">
                      <div className="flex justify-between text-sm font-bold text-gray-500 mb-2">
-                         <span>Progresso da Comunidade</span>
+                         <span>Community Progress</span>
                          <span>{progress.toFixed(0)}%</span>
                      </div>
                      <div className="h-4 bg-gray-100 rounded-full overflow-hidden mb-2">
@@ -142,18 +144,18 @@ const ChallengePost = ({ post }: { post: Post }) => {
                      </div>
                      <div className="flex justify-between text-xs text-gray-400 font-medium mb-6">
                          <span>{post.content.goal.current.toLocaleString()} {post.content.goal.metric}</span>
-                         <span>Meta: {post.content.goal.target.toLocaleString()}</span>
+                         <span>Goal: {post.content.goal.target.toLocaleString()}</span>
                      </div>
 
                      <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                         <p className="text-xs font-bold text-gray-400 uppercase mb-2">Recompensas</p>
+                         <p className="text-xs font-bold text-gray-400 uppercase mb-2">Rewards</p>
                          <div className="flex justify-between items-center text-sm">
                              <span className="font-bold text-dark">Individual: <span className="text-teal">{post.content.rewards.individual}</span></span>
                              <span className="font-bold text-dark">Global: <span className="text-purple">{post.content.rewards.community}</span></span>
                          </div>
                      </div>
 
-                     <Button className="w-full">PARTICIPAR AGORA 🚀</Button>
+                     <Button className="w-full">JOIN NOW 🚀</Button>
                 </div>
             </div>
         </div>
@@ -163,7 +165,7 @@ const ChallengePost = ({ post }: { post: Post }) => {
 const TipPost = ({ post }: { post: Post }) => (
     <div>
         <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-            <span className="text-yellow-500">💡 EcoDica</span>
+            <span className="text-yellow-500">💡 EcoTip</span>
             <span>• {post.timestamp}</span>
         </div>
         
@@ -180,7 +182,7 @@ const TipPost = ({ post }: { post: Post }) => (
 const ImpactPost = ({ post }: { post: Post }) => (
     <div>
         <div className="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-            <span className="text-green-600">🌍 Impacto Global</span>
+            <span className="text-green-600">🌍 Global Impact</span>
             <span>• {post.timestamp}</span>
         </div>
 
@@ -191,15 +193,15 @@ const ImpactPost = ({ post }: { post: Post }) => (
              <div className="grid grid-cols-3 gap-4 divide-x divide-gray-200">
                  <div>
                      <div className="text-xl font-black text-teal">{post.content.stats.co2}</div>
-                     <div className="text-[10px] font-bold text-gray-400 uppercase">CO2 Evitado</div>
+                     <div className="text-[10px] font-bold text-gray-400 uppercase">CO2 Saved</div>
                  </div>
                  <div>
                      <div className="text-xl font-black text-teal">{post.content.stats.items.toLocaleString()}</div>
-                     <div className="text-[10px] font-bold text-gray-400 uppercase">Itens</div>
+                     <div className="text-[10px] font-bold text-gray-400 uppercase">Items</div>
                  </div>
                  <div>
                      <div className="text-xl font-black text-teal">{post.content.stats.trees}</div>
-                     <div className="text-[10px] font-bold text-gray-400 uppercase">Árvores</div>
+                     <div className="text-[10px] font-bold text-gray-400 uppercase">Trees</div>
                  </div>
              </div>
         </div>
@@ -263,11 +265,11 @@ export const CreatePostModal = ({ onClose, onSubmit }: { onClose: () => void, on
     <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
       <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl relative">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-black text-gray-800">Novo Post</h2>
+          <h2 className="text-2xl font-black text-gray-800">New Post</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">×</button>
         </div>
 
-        {/* Tipo de post */}
+        {/* Post Type */}
         <div className="flex gap-2 mb-6 p-1 bg-gray-50 rounded-xl">
           {['achievement', 'milestone', 'tip'].map(t => (
             <button 
@@ -288,7 +290,7 @@ export const CreatePostModal = ({ onClose, onSubmit }: { onClose: () => void, on
         <textarea 
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Compartilhe sua história de reciclagem..."
+          placeholder="Share your recycling story..."
           className="w-full h-32 border-2 border-gray-100 rounded-2xl p-4 resize-none focus:border-teal focus:outline-none transition-colors mb-2"
           maxLength={280}
         />
@@ -300,7 +302,7 @@ export const CreatePostModal = ({ onClose, onSubmit }: { onClose: () => void, on
             disabled={!content.trim()}
             className="bg-gradient-to-r from-teal to-teal-light text-white px-6 py-3 rounded-xl font-bold disabled:opacity-50 hover:shadow-lg hover:scale-105 transition-all"
           >
-            Publicar
+            Post
           </button>
         </div>
       </div>

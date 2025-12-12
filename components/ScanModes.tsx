@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './UI';
 import { CameraIcon } from './Icons';
@@ -24,7 +26,7 @@ export const CameraMode = ({ onCapture }: { onCapture: (base64: string) => void 
             }
         } catch (err) {
             console.error(err);
-            setError("Não foi possível acessar a câmera. Verifique as permissões.");
+            setError("Could not access camera. Check permissions.");
         }
     };
 
@@ -87,7 +89,7 @@ export const CameraMode = ({ onCapture }: { onCapture: (base64: string) => void 
              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-accent rounded-br-xl"></div>
         </div>
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full border border-white/10">
-          Posicione o resíduo no centro
+          Position waste in center
         </div>
       </div>
 
@@ -139,7 +141,7 @@ export const VoiceMode = ({ onVoiceCapture }: { onVoiceCapture: (audioBlob: stri
         setIsRecording(true);
     } catch (e) {
         console.error("Microphone access denied", e);
-        alert("Permissão de microfone necessária.");
+        alert("Microphone permission needed.");
     }
   };
 
@@ -168,7 +170,7 @@ export const VoiceMode = ({ onVoiceCapture }: { onVoiceCapture: (audioBlob: stri
             >
                 🎤
             </button>
-            <p className="mt-6 text-gray-500 font-medium">Toque para descrever o resíduo</p>
+            <p className="mt-6 text-gray-500 font-medium">Tap to describe waste</p>
         </div>
       )}
 
@@ -182,7 +184,7 @@ export const VoiceMode = ({ onVoiceCapture }: { onVoiceCapture: (audioBlob: stri
                 ⏹
             </button>
             <p className="mt-8 text-3xl font-black text-dark tabular-nums">00:{duration.toString().padStart(2, '0')}</p>
-            <p className="mt-2 text-sm text-gray-500">Gravando... Descreva o objeto.</p>
+            <p className="mt-2 text-sm text-gray-500">Recording... Describe the object.</p>
         </div>
       )}
 
@@ -191,10 +193,10 @@ export const VoiceMode = ({ onVoiceCapture }: { onVoiceCapture: (audioBlob: stri
             <div className="w-24 h-24 bg-teal rounded-full flex items-center justify-center text-5xl mx-auto mb-6 text-white shadow-lg">
                 ✓
             </div>
-            <p className="text-gray-800 font-bold mb-6">Áudio capturado com sucesso!</p>
+            <p className="text-gray-800 font-bold mb-6">Audio captured successfully!</p>
             <div className="flex gap-4 justify-center">
-                <Button variant="outline" onClick={() => setRecordedBase64(null)}>Refazer</Button>
-                <Button onClick={() => onVoiceCapture(recordedBase64)}>Analisar 🚀</Button>
+                <Button variant="outline" onClick={() => setRecordedBase64(null)}>Redo</Button>
+                <Button onClick={() => onVoiceCapture(recordedBase64)}>Analyze 🚀</Button>
             </div>
          </div>
       )}
@@ -205,21 +207,21 @@ export const VoiceMode = ({ onVoiceCapture }: { onVoiceCapture: (audioBlob: stri
 // --- TEXT MODE ---
 export const TextMode = ({ onTextSubmit }: { onTextSubmit: (text: string) => void }) => {
     const [input, setInput] = useState("");
-    const suggestions = ["Garrafa PET de Coca-Cola", "Caixa de papelão de pizza", "Lata de alumínio amassada", "Pote de vidro de azeitona"];
+    const suggestions = ["Plastic Cola Bottle", "Pizza Cardboard Box", "Crushed Aluminum Can", "Glass Olive Jar"];
 
     return (
         <div className="flex flex-col h-[500px] bg-white rounded-3xl p-8 border-2 border-gray-100">
-            <h3 className="text-xl font-black text-dark mb-4">Descreva o resíduo</h3>
+            <h3 className="text-xl font-black text-dark mb-4">Describe the waste</h3>
             <textarea 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ex: Garrafa de vidro transparente com tampa de metal, rótulo de papel..."
+                placeholder="Ex: Clear glass bottle with metal lid, paper label..."
                 className="flex-1 border-2 border-gray-200 rounded-2xl p-4 resize-none focus:border-teal focus:outline-none text-lg transition-colors placeholder-gray-300"
                 maxLength={300}
             />
             
             <div className="mt-4">
-                <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Sugestões rápidas</p>
+                <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Quick suggestions</p>
                 <div className="flex flex-wrap gap-2">
                     {suggestions.map(s => (
                         <button 
@@ -238,7 +240,7 @@ export const TextMode = ({ onTextSubmit }: { onTextSubmit: (text: string) => voi
                 disabled={input.length < 3}
                 className="mt-6 w-full py-4 text-lg"
             >
-                Identificar com Gemini 3 🧠
+                Identify with Gemini 3 🧠
             </Button>
         </div>
     );

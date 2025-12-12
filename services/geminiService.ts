@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { ScanResult, ChatMessage } from "../types";
 
@@ -7,18 +8,19 @@ const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 const SYSTEM_INSTRUCTION_ANALYSIS = `
-   Você é um especialista em reciclagem e gestão de resíduos no Brasil. 
-   Analise o resíduo fornecido (imagem, áudio ou descrição textual) usando raciocínio avançado.
+   You are an expert in recycling and waste management. 
+   Analyze the provided waste (image, audio, or text description) using advanced reasoning.
+   Respond in ENGLISH.
    
-   PROCESSO DE ANÁLISE:
-   1. IDENTIFICAÇÃO: Objeto, material (PET, Vidro, etc), condição.
-   2. CONTAMINAÇÃO: Detecte sujeira ou resíduos orgânicos.
-   3. CATEGORIZAÇÃO: Cores da coleta seletiva no Brasil (Azul=Papel, Vermelho=Plástico, etc).
-   4. EDUCAÇÃO: Explique o porquê e curiosidade científica.
-   5. IMPACTO: Estime CO2 economizado e valor para cooperativa.
-   6. STORYTELLING: Crie uma micro-história sobre o ciclo de vida deste item.
+   ANALYSIS PROCESS:
+   1. IDENTIFICATION: Object, material (PET, Glass, etc), condition.
+   2. CONTAMINATION: Detect dirt or organic waste.
+   3. CATEGORIZATION: Standard recycling colors (Blue=Paper, Red=Plastic, Yellow=Metal, Green=Glass, Brown=Organic, Gray=General, etc).
+   4. EDUCATION: Explain why and scientific curiosity.
+   5. IMPACT: Estimate CO2 saved and value for cooperative.
+   6. STORYTELLING: Create a micro-story about the lifecycle of this item.
    
-   Se a entrada for ÁUDIO ou TEXTO, infira as características visuais com base na descrição.
+   If the input is AUDIO or TEXT, infer visual characteristics based on description.
 `;
 
 const RESPONSE_SCHEMA_ANALYSIS = {
@@ -70,14 +72,14 @@ export const analyzeWasteMultimodal = async (input: {
         // Remove header if present
         const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav|ogg);base64,/, "");
         parts.push({ inlineData: { mimeType: "audio/webm", data: cleanAudio } });
-        parts.push({ text: "Analise o áudio onde descrevo um resíduo." });
+        parts.push({ text: "Analyze the audio where I describe a waste item." });
     }
 
     if (input.text) {
-        parts.push({ text: `Descrição do resíduo: ${input.text}` });
+        parts.push({ text: `Waste description: ${input.text}` });
     }
 
-    parts.push({ text: "Analise este resíduo e retorne JSON estruturado seguindo o schema." });
+    parts.push({ text: "Analyze this waste and return structured JSON following the schema." });
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -122,7 +124,7 @@ export const chatWithGemini = async (
             model: "gemini-2.5-flash",
             history: historyParts,
             config: {
-                systemInstruction: "Você é o EcoBot, um assistente virtual acessível, amigável e especialista em reciclagem. Ajude usuários (incluindo cegos ou com baixa visão) descrevendo visualmente conceitos quando necessário. Suas respostas devem ser claras, encorajadoras e prontas para serem lidas em voz alta (TTS). Use emojis com moderação.",
+                systemInstruction: "You are EcoBot, an accessible, friendly, and expert recycling virtual assistant. Help users (including those who are blind or have low vision) by visually describing concepts when necessary. Your responses should be clear, encouraging, and ready to be read aloud (TTS). Use emojis moderately. Respond in English.",
             }
         });
 
@@ -131,7 +133,7 @@ export const chatWithGemini = async (
         if (input.audio) {
             const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav|ogg);base64,/, "");
             messageContent.push({ inlineData: { mimeType: "audio/webm", data: cleanAudio } });
-            messageContent.push({ text: "Ouça e responda a este áudio em português." });
+            messageContent.push({ text: "Listen and respond to this audio in English." });
         }
         
         if (input.text) {
@@ -140,34 +142,34 @@ export const chatWithGemini = async (
 
         const result = await chat.sendMessage({ message: messageContent });
 
-        return result.text || "Desculpe, não entendi. Pode repetir?";
+        return result.text || "Sorry, I didn't understand. Can you repeat?";
     } catch (error) {
         console.error("Chat Error:", error);
-        return "Estou com dificuldades de conexão. Tente novamente!";
+        return "I'm having trouble connecting. Please try again!";
     }
 };
 
 const createFallbackResult = (): ScanResult => ({
-    material: "Desconhecido",
-    material_details: "Não identificado",
-    category: "Geral",
-    bin_color: "Cinza",
+    material: "Unknown",
+    material_details: "Unidentified",
+    category: "General",
+    bin_color: "Gray",
     bin_emoji: "🗑️",
     recyclable: false,
     contamination_detected: false,
     contamination_details: null,
     cleaning_required: false,
     cleaning_instructions: null,
-    educational_explanation: "Não foi possível analisar o item. Tente novamente.",
-    scientific_fact: "A reciclagem reduz a necessidade de extração de novas matérias-primas.",
+    educational_explanation: "Could not analyze the item. Please try again.",
+    scientific_fact: "Recycling reduces the need for extraction of new raw materials.",
     environmental_impact: {
       co2_saved_kg: "0",
       energy_saved: "0",
       recycling_time: "-",
       water_saved: null
     },
-    journey_story: "Tente capturar novamente.",
-    cooperative_impact: "R$ 0,00",
+    journey_story: "Try capturing again.",
+    cooperative_impact: "$ 0.00",
     ecoins_earned: 0,
     tips: [],
     confidence_score: 0

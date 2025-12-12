@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+
+// You can replace the empty string below with your Base64 string: "data:image/png;base64,..."
+const BASE64_LOGO = ""; 
 
 export const Logo = ({ className = "w-10 h-10" }: { className?: string }) => {
-  const [imageError, setImageError] = useState(false);
-
-  // Fallback SVG Icon
+  
+  // High quality SVG Logo (Default)
   const SvgLogo = (
     <svg 
       viewBox="0 0 100 100" 
@@ -24,14 +26,18 @@ export const Logo = ({ className = "w-10 h-10" }: { className?: string }) => {
 
   return (
     <div className={`relative ${className} flex items-center justify-center`}>
-      {!imageError ? (
+      {BASE64_LOGO ? (
         <img 
-          src="./fotos/FocarGo.png" 
+          src={BASE64_LOGO} 
           alt="FocarGo Logo" 
           className="w-full h-full object-contain"
           onError={(e) => {
-             console.error("Logo failed to load from: ", e.currentTarget.src);
-             setImageError(true);
+             // Fallback to SVG if base64 is invalid
+             e.currentTarget.style.display = 'none';
+             if (e.currentTarget.parentElement) {
+                // This logic is handled by the conditional rendering, but as a safety:
+                console.warn("Base64 image failed to load");
+             }
           }}
         />
       ) : SvgLogo}

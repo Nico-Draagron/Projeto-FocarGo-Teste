@@ -1,4 +1,5 @@
 
+
 export type ViewState = 'Home' | 'Scan' | 'Impact' | 'Market' | 'Profile' | 'Learn' | 'Social' | 'Map' | 'Skills' | 'Quests';
 
 export interface ScanResult {
@@ -341,7 +342,7 @@ export interface UserState {
 }
 
 export const INITIAL_USER_STATE: UserState = {
-  name: "Guardian",
+  name: "Username",
   avatar: {
     baseCharacter: 'seal',
     skinColor: '#ffffff',
@@ -370,11 +371,11 @@ export const INITIAL_USER_STATE: UserState = {
       { id: 'dedicated', unlockedAt: new Date().toISOString() }
   ],
   dailyQuests: [
-    { id: 'dq1', type: 'daily', title: 'Scanner Casual', description: 'Identifique 3 itens hoje', difficulty: 'easy', icon: '📸', progress: 1, goal: 3, rewards: { xp: 50, ecoins: 30 }, timeLeft: '14h 30m', completed: false },
-    { id: 'dq2', type: 'daily', title: 'Reciclador de Vidro', description: 'Encontre 1 item de vidro', difficulty: 'medium', icon: '🍾', progress: 0, goal: 1, rewards: { xp: 100, ecoins: 50 }, timeLeft: '14h 30m', completed: false }
+    { id: 'dq1', type: 'daily', title: 'Casual Scanner', description: 'Identify 3 items today', difficulty: 'easy', icon: '📸', progress: 1, goal: 3, rewards: { xp: 50, ecoins: 30 }, timeLeft: '14h 30m', completed: false },
+    { id: 'dq2', type: 'daily', title: 'Glass Recycler', description: 'Find 1 glass item', difficulty: 'medium', icon: '🍾', progress: 0, goal: 1, rewards: { xp: 100, ecoins: 50 }, timeLeft: '14h 30m', completed: false }
   ],
   weeklyQuests: [
-    { id: 'wq1', type: 'weekly', title: 'Caçador de Plástico', description: 'Identifique 20 itens de plástico', difficulty: 'medium', icon: '🔴', progress: 12, goal: 20, rewards: { xp: 300, ecoins: 200, items: ['badge_plastic_hunter'] }, timeLeft: '3d 8h', completed: false }
+    { id: 'wq1', type: 'weekly', title: 'Plastic Hunter', description: 'Identify 20 plastic items', difficulty: 'medium', icon: '🔴', progress: 12, goal: 20, rewards: { xp: 300, ecoins: 200, items: ['badge_plastic_hunter'] }, timeLeft: '3d 8h', completed: false }
   ],
   lessons: {},
   lives: 4,
