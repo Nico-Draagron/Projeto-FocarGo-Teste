@@ -1,4 +1,5 @@
-export type ViewState = 'Home' | 'Scan' | 'Impact' | 'Market' | 'Profile' | 'Learn' | 'Social' | 'Map';
+
+export type ViewState = 'Home' | 'Scan' | 'Impact' | 'Market' | 'Profile' | 'Learn' | 'Social' | 'Map' | 'Skills' | 'Quests';
 
 export interface ScanResult {
   material: string;
@@ -26,6 +27,28 @@ export interface ScanResult {
   confidence_score: number;
 }
 
+// --- AVATAR TYPES ---
+export interface AvatarConfig {
+  baseCharacter: 'seal' | 'tree' | 'leaf' | 'drop' | 'flower';
+  skinColor: string;
+  accessories: {
+    hat: 'none' | 'cap' | 'crown' | 'flowers';
+    glasses: 'none' | 'sunglasses' | 'nerd' | 'vr';
+    outfit: 'none' | 'tshirt' | 'hoodie' | 'superhero';
+  };
+  backgroundColor: string;
+  unlocked: string[]; // IDs of unlocked items
+}
+
+// --- CHAT TYPES ---
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  timestamp: string;
+  isLoading?: boolean;
+}
+
 // --- GAMIFICATION TYPES ---
 
 export interface LevelConfig {
@@ -40,13 +63,16 @@ export interface LevelConfig {
   icon: string;
 }
 
-export interface SkillTreeLevel {
+export interface SkillNodeConfig {
   id: number;
   title: string;
-  requirementCount: number;
+  description: string;
+  icon: string;
+  requiredItems: number;
   rewards: {
-    xpBonus: number;
-    ecoinsBonus: number;
+    ecoinsBonusMultiplier: number; // e.g., 1.2 for 20% bonus
+    badge?: string;
+    unlockFeature?: string;
   };
 }
 
@@ -74,15 +100,40 @@ export interface Achievement {
   };
 }
 
-export interface DailyChallenge {
+export interface Quest {
   id: string;
+  type: 'daily' | 'weekly';
   title: string;
   description: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  icon: string;
   progress: number;
   goal: number;
-  rewards: { xp: number; ecoins: number };
+  rewards: {
+    xp: number;
+    ecoins: number;
+    items?: string[];
+  };
+  timeLeft: string; // Mocked for UI
   completed: boolean;
+}
+
+export interface BossBattle {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: 'legendary';
+  icon: string;
+  progress: number; // Global progress
+  goal: number;
+  rewards: {
+    xp: number;
+    ecoins: number;
+    items: string[];
+  };
+  participants: number;
+  timeLeft: string;
+  isActive: boolean;
 }
 
 // --- EDUCATION TYPES ---
@@ -149,19 +200,50 @@ export interface Redemption {
 
 // --- SOCIAL TYPES ---
 
+export interface Comment {
+  id: string;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  text: string;
+  timestamp: string;
+}
+
 export interface Post {
   id: string;
-  type: "achievement" | "challenge" | "research" | "impact" | "tip" | "partner";
-  authorId: string;
-  authorName: string;
-  authorAvatar: string;
-  authorLevel?: number;
+  type: "achievement" | "challenge" | "impact" | "tip" | "showcase";
+  author?: {
+    name: string;
+    avatar: string;
+    level: number;
+  };
   timestamp: string;
-  content: any;
+  content: any; // Flexible content based on type
   likes: number;
+  comments: Comment[];
   shares: number;
   isPinned?: boolean;
   likedByMe?: boolean;
+}
+
+export interface Challenge {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    goal: {
+        target: number;
+        current: number;
+        metric: string;
+    };
+    participants: number;
+    rewards: {
+        individual: string;
+        community: string;
+    };
+    deadline: string;
+    image?: string;
 }
 
 // --- MAP TYPES ---
@@ -185,6 +267,10 @@ export interface CollectionPoint {
 // --- STATE ---
 
 export interface UserState {
+  // Profile
+  name: string;
+  avatar: AvatarConfig;
+
   // Economy
   balance: number;
 
@@ -199,14 +285,18 @@ export interface UserState {
     [key: string]: SkillTreeProgress;
   };
   achievements: Array<{ id: string; unlockedAt: string }>;
-  dailyChallenges: DailyChallenge[];
+  
+  // Quests
+  dailyQuests: Quest[];
+  weeklyQuests: Quest[];
   
   // Education
   lessons: {
     [key: string]: LessonProgress;
   };
   lives: number;
-  lastLifeRegen: string;
+  maxLives: number;
+  lastLifeRegen: string; // ISO Date
 
   // Market
   redemptionHistory: Redemption[];
@@ -234,13 +324,14 @@ export interface UserState {
   // Streak
   currentStreak: number;
   longestStreak: number;
+  streakFreeze: number; // Number of freezes available
   lastActivityDate: string;
   activityLog: string[]; // dates 'YYYY-MM-DD'
 
   // History
   history: Array<{
     id: string;
-    type: 'scan' | 'quiz' | 'levelup' | 'achievement' | 'redeem' | 'lesson';
+    type: 'scan' | 'quiz' | 'levelup' | 'achievement' | 'redeem' | 'lesson' | 'quest' | 'boss';
     text: string;
     reward?: number;
     xp?: number;
@@ -250,10 +341,22 @@ export interface UserState {
 }
 
 export const INITIAL_USER_STATE: UserState = {
+  name: "Guardian",
+  avatar: {
+    baseCharacter: 'seal',
+    skinColor: '#ffffff',
+    accessories: {
+        hat: 'none',
+        glasses: 'none',
+        outfit: 'none'
+    },
+    backgroundColor: '#0F8F6D',
+    unlocked: ['base_seal', 'base_tree', 'base_leaf', 'base_drop', 'base_flower', 'hat_none', 'glasses_none', 'outfit_none']
+  },
   balance: 1240,
   xp: 1245,
   level: 6,
-  levelTitle: "Guardian 🛡️",
+  levelTitle: "Guardian",
   xpToNextLevel: 1900,
   skillTrees: {
     plastic: { material: 'plastic', currentLevel: 2, itemsIdentified: 21 },
@@ -263,11 +366,20 @@ export const INITIAL_USER_STATE: UserState = {
     organic: { material: 'organic', currentLevel: 0, itemsIdentified: 0 },
     electronic: { material: 'electronic', currentLevel: 0, itemsIdentified: 0 },
   },
-  achievements: [],
-  dailyChallenges: [],
+  achievements: [
+      { id: 'dedicated', unlockedAt: new Date().toISOString() }
+  ],
+  dailyQuests: [
+    { id: 'dq1', type: 'daily', title: 'Scanner Casual', description: 'Identifique 3 itens hoje', difficulty: 'easy', icon: '📸', progress: 1, goal: 3, rewards: { xp: 50, ecoins: 30 }, timeLeft: '14h 30m', completed: false },
+    { id: 'dq2', type: 'daily', title: 'Reciclador de Vidro', description: 'Encontre 1 item de vidro', difficulty: 'medium', icon: '🍾', progress: 0, goal: 1, rewards: { xp: 100, ecoins: 50 }, timeLeft: '14h 30m', completed: false }
+  ],
+  weeklyQuests: [
+    { id: 'wq1', type: 'weekly', title: 'Caçador de Plástico', description: 'Identifique 20 itens de plástico', difficulty: 'medium', icon: '🔴', progress: 12, goal: 20, rewards: { xp: 300, ecoins: 200, items: ['badge_plastic_hunter'] }, timeLeft: '3d 8h', completed: false }
+  ],
   lessons: {},
-  lives: 5,
-  lastLifeRegen: new Date().toISOString(),
+  lives: 4,
+  maxLives: 5,
+  lastLifeRegen: new Date(Date.now() - 1000 * 60 * 60).toISOString(), // 1 hour ago
   redemptionHistory: [],
   wishlist: [],
   likedPosts: [],
@@ -285,8 +397,13 @@ export const INITIAL_USER_STATE: UserState = {
   },
   currentStreak: 12,
   longestStreak: 15,
+  streakFreeze: 2,
   lastActivityDate: new Date().toISOString(),
-  activityLog: [],
+  activityLog: [
+      "2023-10-01", "2023-10-02", "2023-10-05", "2023-10-06", "2023-10-07",
+      "2023-10-08", "2023-10-09", "2023-10-10", "2023-10-11", "2023-10-12",
+      "2023-10-13", "2023-10-14" // Current streak simulation
+  ],
   history: [
     {
       id: '1',

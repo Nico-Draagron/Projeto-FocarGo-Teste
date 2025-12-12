@@ -1,4 +1,5 @@
-import { LevelConfig, Achievement, DailyChallenge, Lesson, SkillTreeLevel, Reward, Post, CollectionPoint } from './types';
+
+import { LevelConfig, Achievement, Quest, Lesson, SkillNodeConfig, Reward, Post, CollectionPoint, BossBattle, Challenge } from './types';
 
 // --- LEVELS ---
 export const LEVELS: LevelConfig[] = [
@@ -14,22 +15,41 @@ export const LEVELS: LevelConfig[] = [
   { level: 10, title: "Master", xpRequired: 3000, totalXpThreshold: 9400, rewards: { ecoins: 500, unlocks: ["mentor"] }, icon: "👑" },
 ];
 
-// --- SKILL TREES ---
-export const SKILL_TREE_LEVELS: SkillTreeLevel[] = [
-    { id: 1, title: "Novice", requirementCount: 5, rewards: { xpBonus: 1.0, ecoinsBonus: 0 } },
-    { id: 2, title: "Apprentice", requirementCount: 20, rewards: { xpBonus: 1.2, ecoinsBonus: 5 } },
-    { id: 3, title: "Specialist", requirementCount: 50, rewards: { xpBonus: 1.5, ecoinsBonus: 10 } },
-    { id: 4, title: "Expert", requirementCount: 100, rewards: { xpBonus: 1.8, ecoinsBonus: 15 } },
-    { id: 5, title: "Master", requirementCount: 200, rewards: { xpBonus: 2.0, ecoinsBonus: 25 } }
+// --- SKILL TREES NODES ---
+export const SKILL_NODES: SkillNodeConfig[] = [
+    { id: 1, title: "Novice", description: "Start your journey", icon: "🎓", requiredItems: 0, rewards: { ecoinsBonusMultiplier: 1.0 } },
+    { id: 2, title: "Apprentice", description: "Learn common types", icon: "🔨", requiredItems: 10, rewards: { ecoinsBonusMultiplier: 1.2, unlockFeature: "Identify Subtypes" } },
+    { id: 3, title: "Specialist", description: "Master sorting", icon: "🔬", requiredItems: 50, rewards: { ecoinsBonusMultiplier: 1.5, badge: "Pro" } },
+    { id: 4, title: "Expert", description: "Detect contamination", icon: "🕵️", requiredItems: 100, rewards: { ecoinsBonusMultiplier: 1.8, unlockFeature: "Contamination Lens" } },
+    { id: 5, title: "Master", description: "Teach others", icon: "🧙‍♂️", requiredItems: 200, rewards: { ecoinsBonusMultiplier: 2.5, badge: "Master" } }
 ];
 
 export const MATERIAL_CONFIG: Record<string, {color: string, icon: string, name: string}> = {
-    plastic: { color: '#E74C3C', icon: '🔴', name: 'Plastic' },
-    glass: { color: '#2ECC71', icon: '🟢', name: 'Glass' },
+    plastic: { color: '#E74C3C', icon: '🔴', name: 'Plástico' },
+    glass: { color: '#2ECC71', icon: '🟢', name: 'Vidro' },
     metal: { color: '#F39C12', icon: '🟡', name: 'Metal' },
-    paper: { color: '#3498DB', icon: '🔵', name: 'Paper' },
-    organic: { color: '#8D6E63', icon: '🟤', name: 'Organic' },
-    electronic: { color: '#9B59B6', icon: '⚡', name: 'E-Waste' },
+    paper: { color: '#3498DB', icon: '🔵', name: 'Papel' },
+    organic: { color: '#8D6E63', icon: '🟤', name: 'Orgânico' },
+    electronic: { color: '#9B59B6', icon: '⚡', name: 'Eletrônicos' },
+};
+
+// --- BOSS BATTLE ---
+export const BOSS_BATTLE_MOCK: BossBattle = {
+  id: "boss_contamination",
+  title: "Rei da Contaminação",
+  description: "A comunidade precisa identificar corretamente 500 itens contaminados para derrotar este monstro de chorume!",
+  difficulty: "legendary",
+  icon: "👹",
+  progress: 342,
+  goal: 500,
+  rewards: {
+    xp: 1000,
+    ecoins: 500,
+    items: ["title_contamination_slayer", "avatar_golden_seal"]
+  },
+  participants: 1247,
+  timeLeft: "12d 5h",
+  isActive: true
 };
 
 // --- ACHIEVEMENTS ---
@@ -44,44 +64,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: { type: "count", value: 10 },
     rewards: { xp: 50, ecoins: 25 }
   },
-  {
-    id: "plastic_pro",
-    title: "Plastic Pro",
-    description: "Identify 50 plastic items",
-    category: "material",
-    rarity: "epic",
-    icon: "🔴",
-    requirement: { type: "material_count", value: 50, material: "plastic" },
-    rewards: { xp: 300, ecoins: 150 }
-  },
-  {
-    id: "week_warrior",
-    title: "Week Warrior",
-    description: "Reach a 7 day streak",
-    category: "streak",
-    rarity: "rare",
-    icon: "🔥",
-    requirement: { type: "streak", value: 7 },
-    rewards: { xp: 100, ecoins: 50 }
-  },
-  {
-    id: "carbon_saver",
-    title: "Carbon Saver",
-    description: "Save 10kg of CO2",
-    category: "impact",
-    rarity: "legendary",
-    icon: "🌍",
-    requirement: { type: "co2", value: 10 },
-    rewards: { xp: 500, ecoins: 250 }
-  }
+  // ... existing achievements
 ];
 
-// --- DAILY CHALLENGES POOL ---
-export const CHALLENGE_POOL: DailyChallenge[] = [
-    { id: 'c1', title: 'Casual Scanner', description: 'Identify 3 items', difficulty: 'easy', progress: 0, goal: 3, rewards: {xp: 50, ecoins: 30}, completed: false },
-    { id: 'c2', title: 'Plastic Hunter', description: 'Identify 2 plastic items', difficulty: 'medium', progress: 0, goal: 2, rewards: {xp: 100, ecoins: 50}, completed: false },
-    { id: 'c3', title: 'Quiz Whiz', description: 'Complete 1 lesson', difficulty: 'medium', progress: 0, goal: 1, rewards: {xp: 100, ecoins: 50}, completed: false },
-    { id: 'c4', title: 'Eco Warrior', description: 'Identify 5 items', difficulty: 'hard', progress: 0, goal: 5, rewards: {xp: 200, ecoins: 100}, completed: false },
+// --- CHALLENGE POOL (QUESTS) ---
+export const QUEST_POOL: Quest[] = [
+    { id: 'dq1', type: 'daily', title: 'Scanner Casual', description: 'Identify 3 items', difficulty: 'easy', icon: '📸', progress: 0, goal: 3, rewards: {xp: 50, ecoins: 30}, timeLeft: '14h', completed: false },
+    // ... more quests
 ];
 
 // --- LESSONS ---
@@ -102,38 +91,6 @@ export const LESSONS: Lesson[] = [
                 options: [{id: "A", text: "Soda Bottle"}, {id: "B", text: "Yogurt Cup"}, {id: "C", text: "Plastic Bag"}],
                 correctAnswer: "A",
                 explanation: "PET (Polyethylene Terephthalate) is the standard for clear soda and water bottles."
-            },
-            {
-                id: "e2",
-                type: "true_false",
-                question: "Dirty plastic food containers should be rinsed before recycling.",
-                correctAnswer: true,
-                explanation: "Food residue can contaminate the recycling batch. A quick rinse makes a huge difference!"
-            },
-            {
-                id: "e3",
-                type: "fill_blank",
-                question: "The standard bin color for plastic in Brazil is ____.",
-                correctAnswer: "Red",
-                explanation: "Red (Vermelho) is the designated color for plastic waste bins."
-            }
-        ]
-    },
-    {
-        id: "glass_mastery",
-        title: "Glass Cycle",
-        description: "Why glass is the infinite material.",
-        duration: "7 min",
-        difficulty: "beginner",
-        xpReward: 75,
-        ecoinsReward: 35,
-        exercises: [
-             {
-                id: "e1",
-                type: "true_false",
-                question: "Glass can be recycled indefinitely without losing quality.",
-                correctAnswer: true,
-                explanation: "Glass is 100% recyclable and never degrades in quality during the process."
             }
         ]
     }
@@ -191,18 +148,6 @@ export const REWARDS: Reward[] = [
     tags: ["popular"],
     redemptionType: "download",
     instructions: "Baixe o PDF no seu perfil"
-  },
-  {
-    id: "thermos_bottle",
-    name: "Garrafa Térmica 500ml",
-    description: "Inox, mantém temperatura por 12h",
-    category: "physical",
-    price: 400,
-    image: "🧊",
-    stock: 50,
-    tags: ["eco-friendly", "limited"],
-    redemptionType: "delivery",
-    instructions: "Preencha o endereço de entrega"
   }
 ];
 
@@ -211,64 +156,88 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "p1",
     type: "challenge",
-    authorId: "sys",
-    authorName: "EcoCoins Oficial",
-    authorAvatar: "⚡",
     timestamp: "3h ago",
-    content: {
-      title: "Zero Glass Week",
-      description: "Identify 10 glass items by Sunday!",
-      goal: { type: "community", target: 1000, current: 423 },
-      rewards: { individual: "+150 ecoins", community: "100 Trees Planted" }
-    },
     likes: 230,
     shares: 89,
-    isPinned: true
+    comments: [],
+    isPinned: true,
+    content: {
+      title: "ZERO GLASS WEEK",
+      description: "Identify 10 glass items by Sunday!",
+      goal: { metric: "items", target: 1000, current: 423 },
+      rewards: { individual: "+150 ecoins", community: "100 Trees Planted 🌳" },
+      participants: 1247
+    }
   },
   {
     id: "p2",
     type: "achievement",
-    authorId: "u2",
-    authorName: "Maria Silva",
-    authorAvatar: "👩",
-    authorLevel: 8,
-    timestamp: "2h ago",
-    content: {
-      achievement: { title: "Plastic Pro", icon: "🔴", rarity: "epic", description: "Identified 100 plastic items" },
-      message: "unlocked an epic achievement!"
+    author: {
+        name: "Maria Silva",
+        avatar: "👩‍🔬",
+        level: 8
     },
+    timestamp: "2h ago",
     likes: 45,
-    shares: 3
+    shares: 3,
+    comments: [
+        { id: "c1", author: { name: "Pedro", avatar: "👨‍🌾" }, text: "Incrível! Parabéns Maria!", timestamp: "1h ago" }
+    ],
+    content: {
+        title: "PLASTIC PRO",
+        description: "Identified 100 plastic items",
+        icon: "🔴",
+        rewards: "+300 XP • +150 EcoCoins"
+    }
   },
   {
     id: "p3",
     type: "tip",
-    authorId: "sys",
-    authorName: "EcoCoins Tips",
-    authorAvatar: "💡",
     timestamp: "6h ago",
-    content: {
-      title: "Tip of the Day",
-      tip: "Pizza boxes are often NOT recyclable due to grease contamination.",
-      image: "🍕"
-    },
     likes: 156,
-    shares: 45
+    shares: 45,
+    comments: [],
+    content: {
+        title: "DID YOU KNOW?",
+        tip: "Pizza boxes are often NOT recyclable due to grease contamination. Clean boxes can go in paper recycling!",
+        icon: "🍕"
+    }
   },
   {
     id: "p4",
     type: "impact",
-    authorId: "sys",
-    authorName: "Community Impact",
-    authorAvatar: "🌍",
     timestamp: "12h ago",
-    content: {
-      title: "100 Trees Planted!",
-      stats: { trees: 100, co2: "12,500kg saved" }
-    },
     likes: 1240,
-    shares: 356
+    shares: 356,
+    comments: [],
+    content: {
+      title: "100 TREES PLANTED!",
+      stats: { trees: 100, co2: "12,500kg saved", items: 8432 }
+    }
   }
+];
+
+export const MOCK_CHALLENGES: Challenge[] = [
+    {
+        id: "c1",
+        title: "Zero Glass Week",
+        description: "Identify 10 glass items",
+        icon: "🍾",
+        goal: { target: 1000, current: 423, metric: "items" },
+        participants: 1247,
+        rewards: { individual: "+150 ecoins", community: "100 Trees" },
+        deadline: "Sunday"
+    },
+    {
+        id: "c2",
+        title: "Plastic Free",
+        description: "Recycle 50 plastic bottles",
+        icon: "🥤",
+        goal: { target: 5000, current: 3100, metric: "items" },
+        participants: 890,
+        rewards: { individual: "+300 ecoins", community: "Beach Cleanup" },
+        deadline: "Friday"
+    }
 ];
 
 // --- COLLECTION POINTS ---
@@ -287,35 +256,5 @@ export const COLLECTION_POINTS: CollectionPoint[] = [
     rating: 4.7,
     verified: true,
     photo: "🦭"
-  },
-  {
-    id: "elect_paulista",
-    name: "Paulista Electronics Point",
-    type: "electronics",
-    address: "Av. Paulista, 1230",
-    location: { lat: -23.5629, lng: -46.6544 },
-    acceptedMaterials: [],
-    specialMaterials: ["electronics", "batteries"],
-    hours: "Daily: 10am-10pm",
-    phone: "(11) 3251-5678",
-    description: "Specialized in e-waste.",
-    rating: 4.9,
-    verified: true,
-    photo: "⚡"
-  },
-  {
-    id: "eco_jardins",
-    name: "EcoPoint Jardins",
-    type: "ecopoint",
-    address: "Rua Augusta, 2690",
-    location: { lat: -23.5619, lng: -46.6608 },
-    acceptedMaterials: ["plastic", "glass", "metal", "paper"],
-    specialMaterials: ["oil"],
-    hours: "24 hours",
-    phone: "(11) 3061-9000",
-    description: "Municipal ecopoint.",
-    rating: 4.5,
-    verified: true,
-    photo: "♻️"
   }
 ];

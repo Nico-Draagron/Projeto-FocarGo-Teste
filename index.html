@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EcoCoins - Recycle & Earn</title>
+    <title>FocarGo - Recicle e Ganhe</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script>
       tailwind.config = {
         theme: {
@@ -12,31 +14,44 @@
             colors: {
               teal: {
                 DEFAULT: '#0F8F6D',
-                dark: '#0B4639',
                 light: '#14B88D',
+                dark: '#0B4639',
               },
               purple: {
                 DEFAULT: '#7A3EB1',
-                dark: '#4A1A71',
                 light: '#9D5BD9',
+                dark: '#4A1A71',
               },
               accent: {
                 DEFAULT: '#5FD45E',
                 hover: '#4BC24A'
               },
-              beige: '#F5F1E8',
+              light: '#F5F1E8',
               dark: '#1A1A1A',
+              gray: {
+                DEFAULT: '#6B7280',
+                light: '#E5E7EB'
+              }
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
             },
             animation: {
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'slide-up': 'slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
               'bounce-slow': 'bounce 3s infinite',
-              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'float': 'float 6s ease-in-out infinite',
-              'spin-slow': 'spin 8s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             },
             keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-10px)' },
@@ -47,7 +62,6 @@
       }
     </script>
     <style>
-      /* Hide scrollbar for clean UI */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -55,30 +69,76 @@
         -ms-overflow-style: none; 
         scrollbar-width: none; 
       }
-      .glass {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+      
+      /* Leaflet Custom Markers */
+      .custom-marker-container {
+        background: transparent;
+        border: none;
       }
-      .glass-dark {
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+
+      .custom-marker {
+        font-size: 32px;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        animation: marker-bounce 2s infinite ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .user-marker {
+        font-size: 24px;
+        animation: marker-pulse 2s infinite;
+        background: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 4px rgba(15, 143, 109, 0.4);
+      }
+
+      @keyframes marker-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes marker-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(15, 143, 109, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(15, 143, 109, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(15, 143, 109, 0); }
+      }
+      
+      .leaflet-popup-content-wrapper {
+        border-radius: 16px;
+        padding: 0;
+        overflow: hidden;
+      }
+      .leaflet-popup-content {
+        margin: 12px;
+        line-height: 1.4;
       }
     </style>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "recharts": "https://esm.sh/recharts@2.12.0?external=react,react-dom",
+    "@google/genai": "https://esm.sh/@google/genai@0.1.1",
+    "framer-motion": "https://esm.sh/framer-motion@11.0.3?external=react,react-dom",
+    "leaflet": "https://esm.sh/leaflet@1.9.4",
+    "react-leaflet": "https://esm.sh/react-leaflet@4.2.1?external=react,react-dom,leaflet",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "recharts": "https://esm.sh/recharts@^3.5.1",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
-</head>
-  <body class="bg-[#F5F1E8] text-[#1A1A1A] antialiased selection:bg-teal selection:text-white">
+  </head>
+  <body class="bg-light text-dark antialiased">
     <div id="root"></div>
   </body>
 </html>

@@ -1,104 +1,91 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
-import { ScanResult, Lesson } from "../types";
+import { ScanResult, ChatMessage } from "../types";
 
 // Initialize Gemini
-// Note: In a real app, strict error handling for missing key is needed.
-// The key is injected via process.env.API_KEY
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
-// ... (Existing analyzeWasteImage function remains the same) ...
-export const analyzeWasteImage = async (base64Image: string): Promise<ScanResult> => {
-  try {
-    // Remove header if present
-    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
-
-    const SYSTEM_INSTRUCTION = `
+const SYSTEM_INSTRUCTION_ANALYSIS = `
    Você é um especialista em reciclagem e gestão de resíduos no Brasil. 
-   Analise imagens de resíduos usando raciocínio avançado (chain-of-thought) 
-   e forneça educação científica precisa.
+   Analise o resíduo fornecido (imagem, áudio ou descrição textual) usando raciocínio avançado.
    
    PROCESSO DE ANÁLISE:
+   1. IDENTIFICAÇÃO: Objeto, material (PET, Vidro, etc), condição.
+   2. CONTAMINAÇÃO: Detecte sujeira ou resíduos orgânicos.
+   3. CATEGORIZAÇÃO: Cores da coleta seletiva no Brasil (Azul=Papel, Vermelho=Plástico, etc).
+   4. EDUCAÇÃO: Explique o porquê e curiosidade científica.
+   5. IMPACTO: Estime CO2 economizado e valor para cooperativa.
+   6. STORYTELLING: Crie uma micro-história sobre o ciclo de vida deste item.
    
-   1. IDENTIFICAÇÃO (Vision API)
-      - Identifique o objeto na imagem
-      - Determine material: plástico, vidro, metal, papel, orgânico, eletrônico
-      - Tipo específico (PET, PEAD, PP para plástico; alumínio, aço para metal, etc)
-      - Condição física (intacto, quebrado, sujo)
-   
-   2. CONTAMINAÇÃO (Reasoning)
-      - Detecte: restos de comida, óleo, líquidos, sujeira
-      - Determine se está limpo o suficiente para reciclar
-      - Instruções de limpeza se necessário
-   
-   3. CATEGORIZAÇÃO (Conhecimento regional - Brasil)
-      - Lixeira correta segundo padrão brasileiro:
-        * Azul = Papel/Papelão
-        * Verde = Vidro
-        * Vermelho = Plástico
-        * Amarelo = Metal
-        * Marrom = Orgânico
-        * Cinza = Não reciclável
-      - Considere infraestrutura brasileira
-   
-   4. EDUCAÇÃO (Text Generation)
-      - Explique POR QUÊ esta categoria (ciência simples)
-      - Dê curiosidade científica interessante
-      - Conecte ao impacto ambiental
-   
-   5. IMPACTO (Data-driven)
-      - CO₂ economizado vs. novo (kg + comparação tangível)
-      - Energia economizada (% + exemplo prático)
-      - Valor econômico para cooperativa (R$)
-   
-   6. STORYTELLING (Human connection)
-      - Narre a jornada: coleta → processamento → novo produto
-      - Inclua contexto humano: "João da Cooperativa Vila Mariana"
-      - Torne tangível e emocional
-   `;
+   Se a entrada for ÁUDIO ou TEXTO, infira as características visuais com base na descrição.
+`;
+
+const RESPONSE_SCHEMA_ANALYSIS = {
+  type: Type.OBJECT,
+  properties: {
+    material: { type: Type.STRING },
+    material_details: { type: Type.STRING },
+    category: { type: Type.STRING },
+    bin_color: { type: Type.STRING },
+    bin_emoji: { type: Type.STRING },
+    recyclable: { type: Type.BOOLEAN },
+    contamination_detected: { type: Type.BOOLEAN },
+    contamination_details: { type: Type.STRING, nullable: true },
+    cleaning_required: { type: Type.BOOLEAN },
+    cleaning_instructions: { type: Type.STRING, nullable: true },
+    educational_explanation: { type: Type.STRING },
+    scientific_fact: { type: Type.STRING },
+    environmental_impact: {
+      type: Type.OBJECT,
+      properties: {
+        co2_saved_kg: { type: Type.STRING },
+        energy_saved: { type: Type.STRING },
+        recycling_time: { type: Type.STRING },
+        water_saved: { type: Type.STRING, nullable: true },
+      }
+    },
+    journey_story: { type: Type.STRING },
+    cooperative_impact: { type: Type.STRING },
+    ecoins_earned: { type: Type.NUMBER },
+    tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+    confidence_score: { type: Type.NUMBER }
+  }
+};
+
+export const analyzeWasteMultimodal = async (input: { 
+    image?: string, 
+    audio?: string, 
+    text?: string 
+}): Promise<ScanResult> => {
+  try {
+    const parts: any[] = [];
+
+    if (input.image) {
+       const cleanBase64 = input.image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+       parts.push({ inlineData: { mimeType: "image/jpeg", data: cleanBase64 } });
+    }
+    
+    if (input.audio) {
+        // Assume audio is base64 encoded webm or similar
+        const cleanAudio = input.audio.replace(/^data:audio\/(webm|mp3|wav);base64,/, "");
+        parts.push({ inlineData: { mimeType: "audio/webm", data: cleanAudio } });
+        parts.push({ text: "Analise o áudio onde descrevo um resíduo." });
+    }
+
+    if (input.text) {
+        parts.push({ text: `Descrição do resíduo: ${input.text}` });
+    }
+
+    parts.push({ text: "Analise este resíduo e retorne JSON estruturado seguindo o schema." });
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", 
-      contents: {
-        parts: [
-          { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } },
-          { text: "Analise este resíduo e retorne JSON estruturado." }
-        ]
-      },
+      model: "gemini-2.5-flash",
+      contents: { parts },
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: SYSTEM_INSTRUCTION_ANALYSIS,
         responseMimeType: "application/json",
         temperature: 0.2,
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            material: { type: Type.STRING },
-            material_details: { type: Type.STRING },
-            category: { type: Type.STRING },
-            bin_color: { type: Type.STRING },
-            bin_emoji: { type: Type.STRING },
-            recyclable: { type: Type.BOOLEAN },
-            contamination_detected: { type: Type.BOOLEAN },
-            contamination_details: { type: Type.STRING, nullable: true },
-            cleaning_required: { type: Type.BOOLEAN },
-            cleaning_instructions: { type: Type.STRING, nullable: true },
-            educational_explanation: { type: Type.STRING },
-            scientific_fact: { type: Type.STRING },
-            environmental_impact: {
-              type: Type.OBJECT,
-              properties: {
-                co2_saved_kg: { type: Type.STRING },
-                energy_saved: { type: Type.STRING },
-                recycling_time: { type: Type.STRING },
-                water_saved: { type: Type.STRING, nullable: true },
-              }
-            },
-            journey_story: { type: Type.STRING },
-            cooperative_impact: { type: Type.STRING },
-            ecoins_earned: { type: Type.NUMBER },
-            tips: { type: Type.ARRAY, items: { type: Type.STRING } },
-            confidence_score: { type: Type.NUMBER }
-          }
-        }
+        responseSchema: RESPONSE_SCHEMA_ANALYSIS
       }
     });
 
@@ -110,37 +97,63 @@ export const analyzeWasteImage = async (base64Image: string): Promise<ScanResult
 
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
-    // Fallback for demo stability
-    return {
-      material: "Item Desconhecido",
-      material_details: "Não foi possível identificar",
-      category: "Desconhecido",
-      bin_color: "Cinza",
-      bin_emoji: "🗑️",
-      recyclable: false,
-      contamination_detected: false,
-      contamination_details: null,
-      cleaning_required: false,
-      cleaning_instructions: null,
-      educational_explanation: "Tente tirar uma foto mais clara do item.",
-      scientific_fact: "A reciclagem economiza recursos naturais.",
-      environmental_impact: {
-        co2_saved_kg: "0",
-        energy_saved: "0",
-        recycling_time: "N/A",
-        water_saved: null
-      },
-      journey_story: "Não conseguimos traçar a jornada deste item.",
-      cooperative_impact: "R$ 0,00",
-      ecoins_earned: 0,
-      tips: ["Limpe a lente da câmera", "Garanta boa iluminação"],
-      confidence_score: 0
-    };
+    return createFallbackResult();
   }
 };
 
-export const generateLessonContent = async (topic: string, difficulty: string): Promise<any> => {
-    // Placeholder for on-demand lesson generation using Gemini
-    // In a production app, this would generate the Lesson JSON structure dynamically.
-    return null;
-}
+// Legacy support wrapper
+export const analyzeWasteImage = async (base64Image: string): Promise<ScanResult> => {
+    return analyzeWasteMultimodal({ image: base64Image });
+};
+
+export const chatWithGemini = async (history: ChatMessage[], newMessage: string): Promise<string> => {
+    try {
+        const historyParts = history.map(msg => ({
+            role: msg.role === 'model' ? 'model' : 'user',
+            parts: [{ text: msg.text }]
+        }));
+
+        const chat = ai.chats.create({
+            model: "gemini-2.5-flash",
+            messages: historyParts,
+            config: {
+                systemInstruction: "Você é o EcoBot, um assistente virtual amigável e especialista em reciclagem do app FocarGo. Ajude os usuários a reciclar, tirar dúvidas sobre materiais e incentive hábitos sustentáveis. Respostas curtas e motivadoras com emojis.",
+            }
+        });
+
+        const result = await chat.sendMessage({
+            message: newMessage
+        });
+
+        return result.text || "Desculpe, não consegui processar sua resposta.";
+    } catch (error) {
+        console.error("Chat Error:", error);
+        return "Estou com dificuldades de conexão no momento. Tente novamente!";
+    }
+};
+
+const createFallbackResult = (): ScanResult => ({
+    material: "Desconhecido",
+    material_details: "Não identificado",
+    category: "Geral",
+    bin_color: "Cinza",
+    bin_emoji: "🗑️",
+    recyclable: false,
+    contamination_detected: false,
+    contamination_details: null,
+    cleaning_required: false,
+    cleaning_instructions: null,
+    educational_explanation: "Não foi possível analisar o item. Tente novamente.",
+    scientific_fact: "A reciclagem reduz a necessidade de extração de novas matérias-primas.",
+    environmental_impact: {
+      co2_saved_kg: "0",
+      energy_saved: "0",
+      recycling_time: "-",
+      water_saved: null
+    },
+    journey_story: "Tente capturar novamente.",
+    cooperative_impact: "R$ 0,00",
+    ecoins_earned: 0,
+    tips: [],
+    confidence_score: 0
+});
