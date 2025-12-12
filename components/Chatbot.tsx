@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { chatWithGemini } from '../services/geminiService';
@@ -73,8 +72,18 @@ export const RecyclingChatbot = () => {
     };
 
     const stopRecording = () => {
-        mediaRecorder.current?.stop();
-        setIsRecording(false);
+        if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
+            mediaRecorder.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
     };
 
     // --- SEND MESSAGE ---
@@ -131,7 +140,7 @@ export const RecyclingChatbot = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="fixed bottom-24 right-4 z-40 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-teal to-accent rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex items-center justify-center text-3xl text-white"
+                className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-teal to-accent rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex items-center justify-center text-3xl text-white"
             >
                 {isOpen ? '✕' : '💬'}
             </motion.button>
@@ -143,16 +152,20 @@ export const RecyclingChatbot = () => {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="fixed bottom-40 right-4 z-40 w-[90vw] md:w-96 h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
+                        className="fixed bottom-36 right-4 md:bottom-28 md:right-8 z-50 w-[calc(100vw-2rem)] md:w-96 bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
+                        style={{
+                            height: 'min(60vh, 600px)', // Default height constraint
+                            maxHeight: 'calc(100vh - 140px)' // Ensure it fits in viewport minus margins
+                        }}
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-teal to-teal-dark p-4 flex items-center gap-3 shadow-md">
+                        <div className="bg-gradient-to-r from-teal to-teal-dark p-4 flex items-center gap-3 shadow-md flex-shrink-0">
                             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl backdrop-blur-sm">🤖</div>
                             <div>
                                 <h3 className="font-bold text-white leading-tight">EcoBot</h3>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                    <span className="text-[10px] text-white/80 font-medium">Online • Voice Active</span>
+                                    <span className="text-[10px] text-white/80 font-medium">Online • AI Assistant</span>
                                 </div>
                             </div>
                         </div>
@@ -197,23 +210,20 @@ export const RecyclingChatbot = () => {
                         </div>
 
                         {/* Input */}
-                        <div className="p-3 bg-white border-t border-gray-100">
+                        <div className="p-3 bg-white border-t border-gray-100 flex-shrink-0">
                             <div className="flex gap-2 items-end">
                                 {/* Microphone Button */}
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
-                                    onMouseDown={startRecording}
-                                    onMouseUp={stopRecording}
-                                    onTouchStart={startRecording}
-                                    onTouchEnd={stopRecording}
+                                    onClick={toggleRecording}
                                     className={`w-12 h-11 rounded-xl flex items-center justify-center text-xl shadow-sm transition-all ${
                                         isRecording 
                                         ? 'bg-red-500 text-white animate-pulse shadow-red-200' 
                                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                                     }`}
-                                    title="Hold to speak"
+                                    title={isRecording ? "Stop Recording" : "Start Recording"}
                                 >
-                                    {isRecording ? '🎙️' : '🎤'}
+                                    {isRecording ? '⏹' : '🎤'}
                                 </motion.button>
 
                                 <input 
@@ -221,7 +231,7 @@ export const RecyclingChatbot = () => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend({ text: input })}
-                                    placeholder={isRecording ? "Listening..." : "Type..."}
+                                    placeholder={isRecording ? "Recording... tap stop to send" : "Type..."}
                                     disabled={isRecording}
                                     className="flex-1 bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal/50 outline-none transition-all"
                                 />
